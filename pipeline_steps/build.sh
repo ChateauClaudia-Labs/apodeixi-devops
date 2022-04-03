@@ -23,9 +23,9 @@ cd ${WORKING_DIR} &>> ${build_log}
 echo "Current directory is $(pwd)" &>> ${build_log}
 echo "Current user is is $(whoami)" &>> ${build_log}
 echo &>> ${build_log}
-echo "=========== git clone  ${APODEIXI_GIT_URL} --branch ${APODEIXI_VERSION}" &>> ${build_log}
+echo "=========== git clone  ${APODEIXI_GIT_URL} --branch v${APODEIXI_VERSION}" &>> ${build_log}
 echo &>> ${build_log}
-git clone  ${APODEIXI_GIT_URL} --branch ${APODEIXI_VERSION} &>> ${build_log}
+git clone  ${APODEIXI_GIT_URL} --branch v${APODEIXI_VERSION} &>> ${build_log}
 echo &>> ${build_log}
 
 echo "=========== Working area and Python version" &>> ${build_log}
@@ -36,8 +36,16 @@ echo &>> ${build_log}
 echo "Python version is $(python --version)" &>> ${build_log}
 echo "Python path is $(which python)" &>> ${build_log}
 echo &>> ${build_log}
-echo "=========== python setup.py install" &>> ${build_log}
+#echo "=========== python setup.py install" &>> ${build_log}
+#echo &>> ${build_log}
+#python setup.py install &>> ${build_log}
+#echo &>> ${build_log}
+echo "=========== python setup.py bdist_wheel" &>> ${build_log}
 echo &>> ${build_log}
-python setup.py install &>> ${build_log}
+python setup.py bdist_wheel &>> ${build_log}
+echo &>> ${build_log}
+echo "=========== copy wheel to host" &>> ${build_log}
+echo &>> ${build_log}
+cp -r dist /home/output/ &>> ${build_log}
 echo &>> ${build_log}
 echo "=========== DONE" &>> ${build_log}

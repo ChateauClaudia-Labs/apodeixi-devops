@@ -1,0 +1,29 @@
+ARG UBUNTU_IMAGE
+FROM ${UBUNTU_IMAGE}
+RUN apt-get update
+
+COPY ./*.whl /home/apodeixi/
+
+# get-pip.py is needed so that we can dowload a version of pip that is compatible with the version of Python we are installing
+COPY ./get-pip.py /home/tmp/
+
+# Get required software (Python). 
+# Also set a symbolic link for "python" to the python we install (e.g., "python3.9") so that "python" is 
+# treated like a Linux command
+#
+ARG PYTHON_VERSION
+RUN apt-get install -y python${PYTHON_VERSION}
+#RUN apt-get install -y python3-pip
+RUN ln -s $(which python${PYTHON_VERSION}) /usr/bin/python
+
+# Get pip - as suggested in https://stackoverflow.com/questions/65644782/how-to-install-pip-for-python-3-9-on-ubuntu-20-04
+RUN apt install -y python${PYTHON_VERSION}-distutils
+RUN cd /home/tmp/ && python get-pip.py
+
+RUN cd /home/apodeixi && pip install *.whl
+
+
+# As explained in https://devopscube.com/keep-docker-container-running/, to ensure that the build server keeps running
+# after running build script, in case that we want to debug it, we must have an entrypoint:
+#
+ENTRYPOINT ["tail", "-f", "/dev/null"]
