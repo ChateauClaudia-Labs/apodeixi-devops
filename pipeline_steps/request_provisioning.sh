@@ -4,7 +4,7 @@
 #
 # To run this script, change directory to the location of this script and do something like this from a command tool
 #
-#               bash create_apodeixi_server.sh
+#               bash request_provisioning.sh
 #
 # As a precondition, the Docker daemon must be running. To start it in WSL2 Ubuntu, do someting like:
 #
@@ -37,11 +37,6 @@ cp ${APODEIXI_DIST}/apodeixi-${APODEIXI_VERSION}-py3-none-any.whl ${WORK_FOLDER}
 # in order to provision pip
 cd ${WORK_FOLDER}
 curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-
-# Apodeixi environment settings
-export APODEIXI_SECRETS_FOLDER="/mnt/c/Users/aleja/Documents/Code/chateauclaudia-labs/apodeixi/UAT_ENV/secrets"
-export APODEIXI_COLLABORATION_AREA="/mnt/c/Users/aleja/Documents/Code/chateauclaudia-labs/apodeixi/UAT_ENV/collaboration_area"
-export APODEIXI_KNOWLEDGE_BASE_FOLDER="C:/Users/aleja/Documents/Code/chateauclaudia-labs/apodeixi/UAT_ENV/kb"
 
 docker build --build-arg UBUNTU_IMAGE --build-arg PYTHON_VERSION -t apodeixi ${WORK_FOLDER}
 
