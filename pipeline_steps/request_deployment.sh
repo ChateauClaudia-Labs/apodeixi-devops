@@ -14,6 +14,8 @@
 
 # Apodeixi environment settings
 
+source ./common.sh
+
 export ENVIRONMENT="UAT_ENV"
 export ROOT_FOLDER="/mnt/c/Users/aleja/Documents/Code/chateauclaudia-labs/apodeixi"
 

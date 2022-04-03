@@ -14,9 +14,12 @@
 #
 #               docker run -it --rm apodeixi /bin/bash
 
+source ./common.sh
+
 export UBUNTU_IMAGE="ubuntu:20.04"
 export PYTHON_VERSION="3.9"
-export APODEIXI_VERSION="0.9.4"
+
+#export APODEIXI_VERSION="0.9.5"
 
 # GOTCHA: Docker realies on a "context folder" to build images. This "context folder" is "passed" to the Docker daemon, so all 
 # files in the host that are referenced during the Docker build process must be in that folder or some sub-folder, not
@@ -38,5 +41,5 @@ cp ${APODEIXI_DIST}/apodeixi-${APODEIXI_VERSION}-py3-none-any.whl ${WORK_FOLDER}
 cd ${WORK_FOLDER}
 curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
 
-docker build --build-arg UBUNTU_IMAGE --build-arg PYTHON_VERSION -t apodeixi ${WORK_FOLDER}
+docker build --build-arg UBUNTU_IMAGE --build-arg PYTHON_VERSION --build-arg APODEIXI_VERSION -t apodeixi ${WORK_FOLDER}
 

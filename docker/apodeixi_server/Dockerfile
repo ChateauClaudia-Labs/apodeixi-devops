@@ -2,7 +2,9 @@ ARG UBUNTU_IMAGE
 FROM ${UBUNTU_IMAGE}
 RUN apt-get update
 
-COPY ./*.whl /home/apodeixi/
+ARG APODEIXI_VERSION
+
+COPY ./apodeixi-${APODEIXI_VERSION}-py3-none-any.whl /home/apodeixi/
 
 # get-pip.py is needed so that we can dowload a version of pip that is compatible with the version of Python we are installing
 COPY ./get-pip.py /home/tmp/
@@ -20,7 +22,7 @@ RUN ln -s $(which python${PYTHON_VERSION}) /usr/bin/python
 RUN apt install -y python${PYTHON_VERSION}-distutils
 RUN cd /home/tmp/ && python get-pip.py
 
-RUN cd /home/apodeixi && pip install *.whl
+RUN cd /home/apodeixi && pip install apodeixi-${APODEIXI_VERSION}-py3-none-any.whl
 
 
 # As explained in https://devopscube.com/keep-docker-container-running/, to ensure that the build server keeps running

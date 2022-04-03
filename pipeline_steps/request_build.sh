@@ -1,7 +1,8 @@
 #!/bin/sh
 
+source ./common.sh
 # Release version that is to be built
-export APODEIXI_VERSION="0.9.4"
+#export APODEIXI_VERSION="0.9.5"
 export APODEIXI_GIT_URL="https://github.com/ChateauClaudia-Labs/apodeixi.git"
 
 # Comment this environment variable if we want to keep the build container (e.g., to inspect problems) after using build is over
