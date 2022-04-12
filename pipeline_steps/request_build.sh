@@ -19,6 +19,7 @@ export TIMESTAMP="$(date +"%y%m%d.%H%M%S")"
 
 # Run build in build container
 #
+echo
 echo "About to start build server container..."
 docker run ${REMOVE_CONTAINER_WHEN_DONE} \
             -e TIMESTAMP=${TIMESTAMP} -e APODEIXI_VERSION=${APODEIXI_VERSION} -e APODEIXI_GIT_URL=${APODEIXI_GIT_URL} \
@@ -28,8 +29,11 @@ docker run ${REMOVE_CONTAINER_WHEN_DONE} \
 echo "...waiting for build server to start..."
 sleep 3
 echo "Build server container up and running..."
+echo "...attempting to build Apodeixi v${APODEIXI_VERSION}..."
 export BUILD_CONTAINER=$(docker ps -q -l)
 docker exec ${BUILD_CONTAINER} /bin/bash /home/scripts/build.sh
 
-echo "...stopping build container"
-docker stop ${BUILD_CONTAINER}
+echo "...stopping build container..."
+echo "...stopped build container $(docker stop ${BUILD_CONTAINER})"
+echo
+echo "Check logs and distribution under ${BUILD_OUTPUT}"

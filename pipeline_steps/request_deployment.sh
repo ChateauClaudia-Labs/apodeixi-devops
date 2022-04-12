@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# This script depolys Apodeixi to a chosen environment. I.e., it launches a container running Apodeixi with the
+# This script deploys Apodeixi to a chosen environment. I.e., it launches a container running Apodeixi with the
 # appropriate configuration that, in particular, points to an environment's data volumes.
 #
 # To run this script, change directory to the location of this script and do something like this from a command tool

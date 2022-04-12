@@ -17,7 +17,9 @@ export build_log="${LOGS_DIR}/${TIMESTAMP}_build.txt"
 
 # NB: Redirecting with &>> appends both standard output and standard error to the file
 
-echo "---------- Build logs ---------- $(date) ---------- Hostname=$(hostname)" &>> ${build_log}
+echo "---------- Build logs ---------- $(date) ---------- " &>> ${build_log}
+echo  &>> ${build_log}
+echo "Hostname=$(hostname)" &>> ${build_log}
 echo &>> ${build_log}
 cd ${WORKING_DIR} &>> ${build_log}
 echo "Current directory is $(pwd)" &>> ${build_log}
