@@ -21,7 +21,7 @@ _test_file_setup() {
 
     # File in which to log output from the tests
     export TEST_LOG="${PROJECT_ROOT}/test/output/logs/${TIMESTAMP}_testrun.txt"
-    touch TEST_LOG
+    touch ${TEST_LOG}
 
     # Log entry prefixes used by Apodeixi DevOps
     export ERR_PROMPT="[A6I CI/CD ERROR]"

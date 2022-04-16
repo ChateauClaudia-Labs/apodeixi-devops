@@ -13,7 +13,7 @@ setup() {
 }
 
 @test "build stage" {
-    run ./request_build.sh
+    run ./request_build.sh 1001
 
     echo "_______status: ${status}" >> $TEST_LOG
     echo "_______output:" >> $TEST_LOG

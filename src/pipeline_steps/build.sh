@@ -10,7 +10,7 @@ if [ ! -d "${LOGS_DIR}" ]; then
   mkdir ${LOGS_DIR}
 fi
 
-export A6I_BUILD_SERVER="a6i-build-server"
+#export A6I_BUILD_SERVER="a6i-build-server"
 
 WORKING_DIR="/home/work"
 mkdir ${WORKING_DIR}
