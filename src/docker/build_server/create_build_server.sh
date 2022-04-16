@@ -17,5 +17,7 @@
 export UBUNTU_IMAGE="ubuntu:20.04"
 export UBUNTU_PYTHON_PACKAGE="python3.9"
 
-docker build --build-arg UBUNTU_IMAGE --build-arg UBUNTU_PYTHON_PACKAGE -t a6i-build-server .
+export A6I_BUILD_SERVER="a6i-build-server"
+
+docker build --build-arg UBUNTU_IMAGE --build-arg UBUNTU_PYTHON_PACKAGE -t ${A6I_BUILD_SERVER} .
 
