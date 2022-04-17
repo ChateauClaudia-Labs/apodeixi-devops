@@ -11,22 +11,13 @@ cli_argument_exists $1
 export PIPELINE_ID="$1_pipeline" # For example, '1001_pipeline'. This is a folder with parameters defining a particular pipeline 
 
 # Check that there is a pipeline for this id
-[ ! -d "${A6I_DEVOPS_ROOT}/pipelines/${PIPELINE_ID}" ] && echo \
-&& echo "${ERROR_PROMPT} ${PIPELINE_ID} is not a valid ID for a pipeline" \
-&& echo "${ERROR_PROMPT} Try 'apdo pipeline list' to view a list of available pipeline IDs" \
-&& echo \
-&& exit 1
+cli_pipeline_exists ${PIPELINE_ALBUM} ${PIPELINE_ID}
 
 # Check that pipeline folder includes a pipeline definition
-[ ! -f "${A6I_DEVOPS_ROOT}/pipelines/${PIPELINE_ID}/pipeline_definition.sh" ] && echo \
-&& echo "${ERROR_PROMPT} ${PIPELINE_ID} is improperly configured:" \
-&& echo "${ERROR_PROMPT} It should contain a 'pipeline_definition'.sh file with a function called 'pipeline_description'" \
-&& echo \
-&& exit 1
-
+cli_pipeline_def_exists ${PIPELINE_ALBUM} ${PIPELINE_ID}
 
 # Get definition (really more of a config) of the pipeline we are running
-source "${A6I_DEVOPS_ROOT}/pipelines/${PIPELINE_ID}/pipeline_definition.sh"
+source "${PIPELINE_ALBUM}/${PIPELINE_ID}/pipeline_definition.sh"
 
 # NOT YET IMPLEMENTED, SO LET THE USER KNOW
 echo

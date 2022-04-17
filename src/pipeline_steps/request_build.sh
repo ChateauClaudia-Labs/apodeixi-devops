@@ -6,13 +6,13 @@ export PIPELINE_SCRIPTS="${A6I_DEVOPS_ROOT}/src/pipeline_steps"
 source ${PIPELINE_SCRIPTS}/common.sh
 
 # Get definition (really more of a config) of the pipeline we are running
-source "${A6I_DEVOPS_ROOT}/pipelines/${PIPELINE_ID}/pipeline_definition.sh"
+#source "${A6I_DEVOPS_ROOT}/pipelines/${PIPELINE_FOLDER}/pipeline_definition.sh"
 
 # Comment this environment variable if we want to keep the build container (e.g., to inspect problems) after using build is over
 export REMOVE_CONTAINER_WHEN_DONE="--rm" 
 
 # Used for external volume
-export BUILD_OUTPUT="${A6I_DEVOPS_ROOT}/pipelines/${PIPELINE_ID}/output"
+export BUILD_OUTPUT="${PIPELINE_ALBUM}/${PIPELINE_FOLDER}/output"
 
 # Run build in build container
 #

@@ -11,13 +11,13 @@ cli_argument_exists $1
 export PIPELINE_ID="$1_pipeline" # For example, '1001_pipeline'. This is a folder with parameters defining a particular pipeline 
 
 # Check that there is a pipeline for this id
-cli_pipeline_exists ${A6I_DEVOPS_ROOT} ${PIPELINE_ID}
+cli_pipeline_exists ${PIPELINE_ALBUM} ${PIPELINE_ID}
 
 # Check that pipeline folder includes a pipeline definition
-cli_pipeline_def_exists ${A6I_DEVOPS_ROOT} ${PIPELINE_ID}
+cli_pipeline_def_exists ${PIPELINE_ALBUM} ${PIPELINE_ID}
 
 # Get definition (really more of a config) of the pipeline we are running
-source "${A6I_DEVOPS_ROOT}/pipelines/${PIPELINE_ID}/pipeline_definition.sh"
+source "${PIPELINE_ALBUM}/${PIPELINE_ID}/pipeline_definition.sh"
 
 # Now show the information for the pipeline in question
 echo 

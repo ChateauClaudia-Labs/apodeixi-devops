@@ -10,10 +10,13 @@ setup() {
     load 'test_helper/common-setup'
     _test_case_setup
     echo "================ $BATS_TEST_NAME ==========" >> $TEST_LOG
+
+    # For tests, use a test-specific pipeline album, instead of the default "production" album meant for "real" pipelines
+    export PIPELINE_ALBUM=${PROJECT_ROOT}/test/pipelines
 }
 
 @test "build stage" {
-    run ./request_build.sh 1001
+    run ./request_build.sh 1001t
 
     echo "_______status: ${status}" >> $TEST_LOG
     echo "_______output:" >> $TEST_LOG

@@ -19,9 +19,7 @@ source ./common.sh
 export UBUNTU_IMAGE="ubuntu:20.04"
 export PYTHON_VERSION="3.9"
 
-#export APODEIXI_VERSION="0.9.5"
-
-# GOTCHA: Docker realies on a "context folder" to build images. This "context folder" is "passed" to the Docker daemon, so all 
+# GOTCHA: Docker relies on a "context folder" to build images. This "context folder" is "passed" to the Docker daemon, so all 
 # files in the host that are referenced during the Docker build process must be in that folder or some sub-folder, not
 # in "super directories" like ../ since they are not reachable by the Docker daemon.
 #
