@@ -1,13 +1,24 @@
 #!/usr/bin/env bash
 
+_set_project_root() {
+    # get the containing directory of this file
+    # use $BATS_TEST_FILENAME instead of ${BASH_SOURCE[0]} or $0,
+    # as those will point to the bats executable's location or the preprocessed file respectively
+    PROJECT_ROOT="$( cd "$( dirname "$BATS_TEST_FILENAME" )/../../../" >/dev/null 2>&1 && pwd )"    
+}
+
 setup_file() {
-    load 'test_helper/common-setup'
+    _set_project_root
+
+    load '../util/common-setup'
     _test_file_setup
     cd $PROJECT_ROOT/src/docker_flow/pipeline_steps
 }
 
 setup() {
-    load 'test_helper/common-setup'
+    _set_project_root
+
+    load '../util/common-setup'
     _test_case_setup
     echo "================ $BATS_TEST_NAME ==========" >> $TEST_LOG
 }

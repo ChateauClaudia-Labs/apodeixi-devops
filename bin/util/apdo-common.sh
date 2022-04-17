@@ -13,7 +13,6 @@ cli_help() {
       apdo pipeline describe <pipeline ID>  Describes what is deployed by given pipeline
       apdo pipeline run <pipeline ID>       Runs given pipeline
   "
-  echo
 }
 
 # Function takes two arguments: the argument to test for void, and the error message to display if it is blank

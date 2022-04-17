@@ -44,12 +44,12 @@ All tests and their tooling lies in the test folder.
 
 To run all the tests, change directory to the root of the apodeixi-devlops project and run this command in Bash:
 
-`./test/bats/bin/bats test`
+`./test/bats/bin/bats -r test/src`
 
 To run a particular test, replace `test` by its relative path. For example, to run the `test/test_build.bats`,
 run this in Bash:
 
-`./test/bats/bin/bats test/test_build.bats`
+`./test/bats/bin/bats test/src/docker_flow/test_build.bats`
 
 If tests fail and we need to see the temporary output (e.g., logs and such), set this environment variable before running
 the tests:
