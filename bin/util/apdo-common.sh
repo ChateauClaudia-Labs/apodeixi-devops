@@ -36,7 +36,7 @@ cli_argument_exists() {
 #
 if [ -z "${PIPELINE_ALBUM}" ]
     then
-        export PIPELINE_ALBUM=${A6I_DEVOPS_ROOT}/pipelines
+        export PIPELINE_ALBUM=${A6I_DEVOPS_ROOT}/pipeline_album
 fi
 
 

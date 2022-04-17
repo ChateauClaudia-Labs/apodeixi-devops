@@ -8,6 +8,8 @@
 # For example, "220331.120319" is a run done at 12:03 pm (and 19 seconds) on March 31, 2022
 export TIMESTAMP="$(date +"%y%m%d.%H%M%S")"
 
+
+
 export ERR_PROMPT="[A6I CI/CD ERROR]"
 export INFO_PROMPT="[A6I CI/CD INFO]"
 
@@ -18,7 +20,6 @@ if [ -z "$1" ]
     exit 1
 fi
 export PIPELINE_FOLDER="$1_pipeline" # For example, '1001_pipeline'. This is a folder with parameters defining a particular pipeline   
-echo "${INFO_PROMPT} Running pipeline '${PIPELINE_FOLDER}'"
 
 # By default, we use the pipelines in this project unless a pipeline "album" has been injected. A pipeline "album"
 # is simply a folder with subfolders called <ID>_pipeline, where <ID> identifies a pipeline in the "album".
@@ -30,7 +31,22 @@ echo "${INFO_PROMPT} Running pipeline '${PIPELINE_FOLDER}'"
 #
 if [ -z "${PIPELINE_ALBUM}" ]
     then
-        export PIPELINE_ALBUM=${A6I_DEVOPS_ROOT}/pipelines
+        export PIPELINE_ALBUM=${A6I_DEVOPS_ROOT}/pipeline_album
+fi
+
+# Normally the identifier for a run is the timestamp, but there is a GOTCHA:
+#   - We want the same run identifier across all the pipeline steps
+#   - And each pipeline step includes this file, hence each pipeline step uses a different timestamp
+#   - For steps, that is OK since that way the logs of different steps are sorted by time when the step ran
+#   - But for the run as a whole, we need a common ID across all steps of the run
+#   - Hence we take the approach of using a dedicated environment variable for the run id, separate from the
+#     timestamp environment variable, and we only set it once the first time that this script is called. 
+#   - We also print the header for the run only if we are setting the run id, since we don't want to print it once
+#     for the run of the pipeline, not per step in the run
+if [ -z "$RUN_TIMESTAMP" ]
+  then
+    export RUN_TIMESTAMP=${TIMESTAMP}
+    echo "${INFO_PROMPT} Running pipeline '${PIPELINE_FOLDER}' with run ID '${RUN_TIMESTAMP}'"
 fi
 
 # Check pipeline album contains a pipeline with the given ID
@@ -38,6 +54,21 @@ fi
   && echo "${ERR_PROMPT} '${PIPELINE_ALBUM}/${PIPELINE_FOLDER}' does not exist" \
   && echo \
   && exit 1
+
+# Used for writing all output produced by a pipeline run. 
+# In particular, it is passed as an external volume to containers used by the pipeline to e.g. build.
+# This could be injected if the environment variable was previously set (for example, test cases may want to
+# inject it to be a sub-area of test output's are), but if it has not been injected, we default it.
+if [ -z "${PIPELINE_OUTPUT}" ]
+    then
+        export PIPELINE_OUTPUT=${PIPELINE_ALBUM}/${PIPELINE_FOLDER}/output/${RUN_TIMESTAMP}_pipeline_run
+        if [ ! -d "${PIPELINE_ALBUM}/${PIPELINE_FOLDER}/output" ]
+            then
+                mkdir "${PIPELINE_ALBUM}/${PIPELINE_FOLDER}/output"
+        fi
+fi
+
+
 
 # Check pipeline folder in the album contains a definition script
   [ ! -f "${PIPELINE_ALBUM}/${PIPELINE_FOLDER}/pipeline_definition.sh" ] && echo \

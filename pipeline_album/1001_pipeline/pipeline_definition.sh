@@ -5,6 +5,7 @@
 # So this variable is required for all pipelines.
 pipeline_description() {
     echo "
+    Flow type:                          Docker flow
     Apodexi version built:              v0.9.7
     Packaged as:                        Docker container
     Deployed to:                        Local Linux host (same host in which pipeline is run)

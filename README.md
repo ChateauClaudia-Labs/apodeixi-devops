@@ -51,4 +51,13 @@ run this in Bash:
 
 `./test/bats/bin/bats test/test_build.bats`
 
+If tests fail and we need to see the temporary output (e.g., logs and such), set this environment variable before running
+the tests:
+
+`export KEEP_TEST_OUTPUT=1`
+
+and later unset it when you no longer want to retain temporary output:
+
+`unset KEEP_TEST_OUTPUT`
+
 
