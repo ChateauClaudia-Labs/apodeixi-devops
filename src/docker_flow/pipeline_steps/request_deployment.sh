@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # This script deploys Apodeixi to a chosen environment. I.e., it launches a container running Apodeixi with the
 # appropriate configuration that, in particular, points to an environment's data volumes.

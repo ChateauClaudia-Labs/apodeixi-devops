@@ -19,36 +19,28 @@ echo
 echo "${INFO_PROMPT} About to start build server container..."
 docker run ${REMOVE_CONTAINER_WHEN_DONE} \
             -e TIMESTAMP=${TIMESTAMP} -e APODEIXI_VERSION=${APODEIXI_VERSION} -e APODEIXI_GIT_URL=${APODEIXI_GIT_URL} \
-            -v ${PIPELINE_OUTPUT}:/home/output -v ${PIPELINE_SCRIPTS}:/home/scripts \
+            -v ${PIPELINE_STEP_OUTPUT}:/home/output -v ${PIPELINE_SCRIPTS}:/home/scripts \
             ${A6I_BUILD_SERVER} & 2>/tmp/error # run in the background so rest of this script can proceed
-if [[ $? != 0 ]]; then
-    error=$(</tmp/error)
-    echo "${ERR_PROMPT} ${error}"
-    echo "${ERR_PROMPT} For more detail on error, check logs under ${PIPELINE_OUTPUT}"
-    exit 1
-fi
+abort_on_error
 
 echo "${INFO_PROMPT} ...waiting for build server to start..."
 sleep 3
 
 export BUILD_CONTAINER=$(docker ps -q -l) 2>/tmp/error
-if [[ $? != 0 ]]; then
-    error=$(</tmp/error)
-    echo "${ERR_PROMPT} ${error}"
-    echo "${ERR_PROMPT} For more detail on error, check logs under ${PIPELINE_OUTPUT}"
-    exit 1
-fi
+abort_on_error
 
 echo "${INFO_PROMPT} Build server container ${BUILD_CONTAINER} up and running..."
 echo "${INFO_PROMPT} ...attempting to build Apodeixi v${APODEIXI_VERSION}..."
 
 echo "${INFO_PROMPT} ...will build Apodeixi using container ${BUILD_CONTAINER}..."
 docker exec ${BUILD_CONTAINER} /bin/bash /home/scripts/build.sh 2>/tmp/error
+# We don't use the generic function ./common.sh::abort_on_error because we want to warn the user that a rogue container
+# was left running, so we manually write the code to catch and handle the exception
 if [[ $? != 0 ]]; then
     error=$(</tmp/error)
     echo "${ERR_PROMPT} ${error}"
     echo "${ERR_PROMPT} Due to above error, cleanup wasn't done. Container ${BUILD_CONTAINER} needs to be manually stopped"
-    echo "${ERR_PROMPT} For more detail on error, check logs under ${PIPELINE_OUTPUT}"
+    echo "${ERR_PROMPT} For more detail on error, check logs under ${PIPELINE_STEP_OUTPUT}"
     exit 1
 fi
 
@@ -61,4 +53,4 @@ echo
 duration=$SECONDS
 echo "${INFO_PROMPT} ---------------- Completed build step in $duration sec"
 echo
-echo "${INFO_PROMPT} Check logs and distribution under ${PIPELINE_OUTPUT}"
+echo "${INFO_PROMPT} Check logs and distribution under ${PIPELINE_STEP_OUTPUT}"

@@ -14,8 +14,10 @@ COPY ./get-pip.py /home/tmp/
 # treated like a Linux command
 #
 ARG PYTHON_VERSION
+# The Python install was failing until this `apt-get update` was added right before it
+RUN apt-get update 
 RUN apt-get install -y python${PYTHON_VERSION}
-#RUN apt-get install -y python3-pip
+
 RUN ln -s $(which python${PYTHON_VERSION}) /usr/bin/python
 
 # If we don't want the default UTC time, do this to set the desirable timezone:

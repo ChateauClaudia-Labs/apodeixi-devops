@@ -4,11 +4,21 @@
 # It is expected to be sourced by each pipeline step's request script. 
 # It requires that ${A6I_DEVOPS_ROOT} be set up prior to sourcing this script.
 
+# Used to "catch exceptions", kind of, in the Bash programming environment.
+# Requirements:
+#   - Beforehand the error stream has been re-directored to /tmp/error (doing "2>/tmp/error" at the end of the previous command)
+abort_on_error() {
+    if [[ $? != 0 ]]; then
+      error=$(</tmp/error)
+      echo "${ERR_PROMPT} ${error}"
+      echo "${ERR_PROMPT} For more detail on error, check logs under ${PIPELINE_STEP_OUTPUT}"
+      exit 1
+    fi
+}
+
 # Unique timestamp used e.g., as a prefix in the names of log files
 # For example, "220331.120319" is a run done at 12:03 pm (and 19 seconds) on March 31, 2022
 export TIMESTAMP="$(date +"%y%m%d.%H%M%S")"
-
-
 
 export ERR_PROMPT="[A6I CI/CD ERROR]"
 export INFO_PROMPT="[A6I CI/CD INFO]"
@@ -59,16 +69,45 @@ fi
 # In particular, it is passed as an external volume to containers used by the pipeline to e.g. build.
 # This could be injected if the environment variable was previously set (for example, test cases may want to
 # inject it to be a sub-area of test output's are), but if it has not been injected, we default it.
-if [ -z "${PIPELINE_OUTPUT}" ]
+if [ -z "${PIPELINE_STEP_OUTPUT}" ]
     then
-        export PIPELINE_OUTPUT=${PIPELINE_ALBUM}/${PIPELINE_FOLDER}/output/${RUN_TIMESTAMP}_pipeline_run
+        export PIPELINE_STEP_OUTPUT=${PIPELINE_ALBUM}/${PIPELINE_FOLDER}/output/${RUN_TIMESTAMP}_pipeline_run
         if [ ! -d "${PIPELINE_ALBUM}/${PIPELINE_FOLDER}/output" ]
             then
                 mkdir "${PIPELINE_ALBUM}/${PIPELINE_FOLDER}/output"
         fi
 fi
 
+# Create output folder if it does not already exist
+if [ ! -d "${PIPELINE_STEP_OUTPUT}" ]
+    then
+        mkdir "${PIPELINE_STEP_OUTPUT}"
+fi
 
+
+# ${PIPELINE_STEP_INTAKE} is the folder from which pipeline steps intake data created in upstream pipeline steps.
+#
+# It normally is the same as ${PIPELINE_STEP_OUTPUT}, but in some use cases they are different
+# (for example, when testing a particular pipeline step while using a stub for the upstream computed data
+# that it may need)
+#
+# As an added twist, when the operator is "continuing" a pipeline from a previous point, then the user can
+# pass it as an argument to $2. I.e., $2 points to the previous pipeline run's output, and this new run will
+# get its intake from there. Obviously this makes sense only if the caller is not re-running steps that had completed
+# in the previous run, but is instead running only subsequent steps.
+#
+if [ ! -z $2 ] # If the intake folder is passed by hand, supersede defaults and programmatic injections
+    then
+        export PIPELINE_STEP_INTAKE=${2}
+fi
+
+if [ -z "${PIPELINE_STEP_INTAKE}" ] # In this case use the default, if earlier code didn't previously inject it
+    then
+        export PIPELINE_STEP_INTAKE=${PIPELINE_STEP_OUTPUT}
+fi
+
+echo "${INFO_PROMPT} PIPELINE_STEP_INTAKE = ${PIPELINE_STEP_INTAKE}"
+echo "${INFO_PROMPT} PIPELINE_STEP_OUTPUT = ${PIPELINE_STEP_OUTPUT}"
 
 # Check pipeline folder in the album contains a definition script
   [ ! -f "${PIPELINE_ALBUM}/${PIPELINE_FOLDER}/pipeline_definition.sh" ] && echo \

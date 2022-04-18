@@ -23,7 +23,12 @@ _test_case_setup() {
     export SCENARIO_INPUTS_FOLDER=${PROJECT_ROOT}/test/scenarios/${TESTCASE_ID}
     export PIPELINE_ALBUM=${SCENARIO_INPUTS_FOLDER}/pipeline_album
 
-    export PIPELINE_OUTPUT="${TESTCASE_OUTPUT_DIR}/pipeline_run"
+    # Folder where pipeline steps write their output to
+    export PIPELINE_STEP_OUTPUT="${TESTCASE_OUTPUT_DIR}/pipeline_run"
+
+    # Folder from which pipeline steps intake data created in upstream pipeline steps.
+    # We inject a non-default value for test cases
+    export PIPELINE_STEP_INTAKE="${SCENARIO_INPUTS_FOLDER}/pipeline_step_intake"
 
     # File in which to log output from the tests
     export TEST_LOG="${TESTCASE_OUTPUT_DIR}/test_log.txt"

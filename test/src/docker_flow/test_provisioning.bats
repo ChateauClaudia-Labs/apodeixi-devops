@@ -23,7 +23,7 @@ setup() {
     echo "================ $BATS_TEST_NAME ==========" >> $TEST_LOG
 }
 
-@test "1001" {
+@test "1101" {
     # DEVELOPMENT DEBUG - Uncomment to keep output while debugging
     #export KEEP_TEST_OUTPUT=1
 
@@ -32,9 +32,9 @@ setup() {
     export ORIGINAL_KEEP_TEST_OUTPUT=$KEEP_TEST_OUTPUT
     export KEEP_TEST_OUTPUT=1
 
-    echo "_______Test case description: build stage" >> $TEST_LOG
+    echo "_______Test case description: provisioning stage" >> $TEST_LOG
 
-    run ./request_build.sh "ABC"
+    run ./request_provisioning.sh "ABC"
 
     echo "_______status: ${status}" >> $TEST_LOG
     echo "_______output:" >> $TEST_LOG
@@ -46,7 +46,7 @@ setup() {
     # Even if there are no errors in the log, if something more fatal happened, catch it here
     assert [ ${status} -eq 0 ]
 
-    # SUCCESS!  Got ths far without problems, so restore original. 
+    # SUCCESS!  Got ths far without problems, so restore original
     #       If we don't get here, then something went wrong and we don't want the original, to force teardown to retain
     #       output, logs, etc., to help with debugging.
     export KEEP_TEST_OUTPUT=$ORIGINAL_KEEP_TEST_OUTPUT

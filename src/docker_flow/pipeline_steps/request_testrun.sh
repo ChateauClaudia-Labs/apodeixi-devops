@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # This script conducts acceptance tests for Apodeixi by deploying the Apodeixi container, mounting on it
 # an acceptance test database, running the tests, and producing test logs in a host folder that is mounted
