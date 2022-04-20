@@ -32,6 +32,6 @@ RUN cd /home/apodeixi && pip install apodeixi-${APODEIXI_VERSION}-py3-none-any.w
 
 
 # As explained in https://devopscube.com/keep-docker-container-running/, to ensure that the build server keeps running
-# after running build script, in case that we want to debug it, we must have an entrypoint:
+# after running build script, in case that we want to debug it, we must have an entrypoint.
 #
 ENTRYPOINT ["tail", "-f", "/dev/null"]

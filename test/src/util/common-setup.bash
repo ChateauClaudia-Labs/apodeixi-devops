@@ -75,26 +75,26 @@ _generic_teardown() {
 
     if [[ 0 != ${status} ]] # Invocation of DevOps functionality triggered an error
         then
-            echo >&3
-            echo "DevOps services failed with status $status, so output is being kept at:" >&3
-            echo "      ${TESTCASE_OUTPUT_DIR}" >&3
+            echo "# " >&3
+            echo "# DevOps services failed with status $status, so output is being kept at:" >&3
+            echo "#       ${TESTCASE_OUTPUT_DIR}" >&3
 
     elif [[ ! -z $OUTPUT_DOES_NOT_MATCH_EXPECTED ]] # DevOps services ran OK, but expected output did not match
         then 
             # As per Bats documentation (https://bats-core.readthedocs.io/en/stable/writing-tests.html#printing-to-the-terminal),
             # we must redirect to 3 if we want to force printing information to the terminal
-            echo >&3
-            echo "Test output doesn't match expected. Output is being kept at:" >&3
-            echo "      ${TESTCASE_OUTPUT_DIR}" >&3  
+            echo "# " >&3
+            echo "# Test output doesn't match expected. Output is being kept at:" >&3
+            echo "#       ${TESTCASE_OUTPUT_DIR}" >&3  
     elif [[ ! -z $KEEP_TEST_OUTPUT ]] # Test passed, but user had set $KEEP_TEST_OUTPUT
         then 
             # As per Bats documentation (https://bats-core.readthedocs.io/en/stable/writing-tests.html#printing-to-the-terminal),
             # we must redirect to 3 if we want to force printing information to the terminal
-            echo >&3
-            echo "Test output is being kept at:" >&3
-            echo "      ${TESTCASE_OUTPUT_DIR}" >&3 
-            echo >&3
-            echo "Do 'unset KEEP_TEST_OUTPUT' in command line to discard future output" >&3 
+            echo "# " >&3
+            echo "# Test output is being kept at:" >&3
+            echo "#       ${TESTCASE_OUTPUT_DIR}" >&3 
+            echo "# " >&3
+            echo "# Do 'unset KEEP_TEST_OUTPUT' in command line to discard future output" >&3 
         
     else
         # Nothing seems to have gone wrong, nor has user asked to retain output, so no need to retain output

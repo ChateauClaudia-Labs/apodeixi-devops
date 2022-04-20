@@ -20,7 +20,7 @@ echo "${INFO_PROMPT} About to start build server container..."
 docker run ${REMOVE_CONTAINER_WHEN_DONE} \
             -e TIMESTAMP=${TIMESTAMP} -e APODEIXI_VERSION=${APODEIXI_VERSION} -e APODEIXI_GIT_URL=${APODEIXI_GIT_URL} \
             -v ${PIPELINE_STEP_OUTPUT}:/home/output -v ${PIPELINE_SCRIPTS}:/home/scripts \
-            ${A6I_BUILD_SERVER} & 2>/tmp/error # run in the background so rest of this script can proceed
+            ${A6I_BUILD_SERVER} & 2>/tmp/error  # run in the background so rest of this script can proceed
 abort_on_error
 
 echo "${INFO_PROMPT} ...waiting for build server to start..."
