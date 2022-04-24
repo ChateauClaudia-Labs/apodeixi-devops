@@ -15,11 +15,27 @@ echo "${INFO_PROMPT} ---------------- Starting build step"
 # Initialize Bash's `SECONDS` timer so that at the end we can compute how long this sript took
 SECONDS=0
 
+echo "${INFO_PROMPT} ... Determining approach for how container can access the GIT repo:"
+if [ ! -z ${MOUNT_APODEIXI_GIT_PROJECT} ]
+    then
+        echo "${INFO_PROMPT}        = by mounting this drive:"
+        echo "${INFO_PROMPT}        => ${APODEIXI_GIT_URL}"
+        export APODEIXI_URL_CLONED_BY_CONTAINER="/home/apodeixi"
+        export GIT_REPO_MOUNT_DOCKER_OPTION="-v ${APODEIXI_GIT_URL}:${APODEIXI_URL_CLONED_BY_CONTAINER}"
+    else
+        echo "${INFO_PROMPT}        => from this URL:"
+        echo "${INFO_PROMPT}        => ${APODEIXI_GIT_URL}"
+        export APODEIXI_URL_CLONED_BY_CONTAINER="${APODEIXI_GIT_URL}"
+fi
+
 echo
 echo "${INFO_PROMPT} About to start build server container..."
 docker run ${REMOVE_CONTAINER_WHEN_DONE} \
-            -e TIMESTAMP=${TIMESTAMP} -e APODEIXI_VERSION=${APODEIXI_VERSION} -e APODEIXI_GIT_URL=${APODEIXI_GIT_URL} \
+            --hostname "APO-BUILDER-${TIMESTAMP}" \
+            -e TIMESTAMP=${TIMESTAMP} -e APODEIXI_GIT_BRANCH=${APODEIXI_GIT_BRANCH} \
+            -e APODEIXI_GIT_URL=${APODEIXI_URL_CLONED_BY_CONTAINER} \
             -v ${PIPELINE_STEP_OUTPUT}:/home/output -v ${PIPELINE_SCRIPTS}:/home/scripts \
+            ${GIT_REPO_MOUNT_DOCKER_OPTION} \
             ${A6I_BUILD_SERVER} & 2>/tmp/error  # run in the background so rest of this script can proceed
 abort_on_error
 
@@ -30,7 +46,7 @@ export BUILD_CONTAINER=$(docker ps -q -l) 2>/tmp/error
 abort_on_error
 
 echo "${INFO_PROMPT} Build server container ${BUILD_CONTAINER} up and running..."
-echo "${INFO_PROMPT} ...attempting to build Apodeixi v${APODEIXI_VERSION}..."
+echo "${INFO_PROMPT} ...attempting to build Apodeixi branch ${APODEIXI_GIT_BRANCH}..."
 
 echo "${INFO_PROMPT} ...will build Apodeixi using container ${BUILD_CONTAINER}..."
 docker exec ${BUILD_CONTAINER} /bin/bash /home/scripts/build.sh 2>/tmp/error

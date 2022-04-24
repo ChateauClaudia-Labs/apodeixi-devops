@@ -46,7 +46,7 @@ fi
 
 # Normally the identifier for a run is the timestamp, but there is a GOTCHA:
 #   - We want the same run identifier across all the pipeline steps
-#   - And each pipeline step includes this file, hence each pipeline step uses a different timestamp
+#   - And each pipeline step includes this file, hence each pipeline step uses a different value for $TIMESTAMP
 #   - For steps, that is OK since that way the logs of different steps are sorted by time when the step ran
 #   - But for the run as a whole, we need a common ID across all steps of the run
 #   - Hence we take the approach of using a dedicated environment variable for the run id, separate from the

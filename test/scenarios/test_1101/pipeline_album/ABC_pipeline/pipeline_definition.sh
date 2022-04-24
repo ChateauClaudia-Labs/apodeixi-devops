@@ -22,6 +22,7 @@ export UBUNTU_IMAGE="ubuntu:20.04"
 export PYTHON_VERSION="3.9"
 
 # Release version that is to be built
+export APODEIXI_GIT_BRANCH="v0.9.7"
 export APODEIXI_VERSION="0.9.7"
 
 export APODEIXI_GIT_URL="https://github.com/ChateauClaudia-Labs/apodeixi.git"

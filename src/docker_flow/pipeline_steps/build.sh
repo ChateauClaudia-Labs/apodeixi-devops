@@ -29,12 +29,12 @@ echo "[A6I_BUILD_SERVER] Current directory is $(pwd)" &>> ${BUILD_LOG}
 echo "[A6I_BUILD_SERVER] Current user is is $(whoami)" &>> ${BUILD_LOG}
 echo &>> ${BUILD_LOG}
 
-echo "[A6I_BUILD_SERVER] =========== git clone  ${APODEIXI_GIT_URL} --branch v${APODEIXI_VERSION}" &>> ${BUILD_LOG}
+echo "[A6I_BUILD_SERVER] =========== git clone  ${APODEIXI_GIT_URL} --branch ${APODEIXI_GIT_BRANCH}" &>> ${BUILD_LOG}
 echo &>> ${BUILD_LOG}
-git clone  ${APODEIXI_GIT_URL} --branch v${APODEIXI_VERSION} &>> ${BUILD_LOG} 2>/tmp/error
+git clone  ${APODEIXI_GIT_URL} --branch ${APODEIXI_GIT_BRANCH} 1>> ${BUILD_LOG} 2>/tmp/error
 if [[ $? != 0 ]]; then
     error=$(</tmp/error)
-    echo "${ERR_PROMPT} ${error}" ${BUILD_LOG}
+    echo "${ERR_PROMPT} ${error}" &>> ${BUILD_LOG}
     # Signal error again, this time for caller to catch
     echo "Aborting build because: ${error}"  >/dev/stderr
     exit 1
@@ -52,6 +52,9 @@ echo "[A6I_BUILD_SERVER] Python version is $(python --version)" &>> ${BUILD_LOG}
 echo "[A6I_BUILD_SERVER] Python path is $(which python)" &>> ${BUILD_LOG}
 echo &>> ${BUILD_LOG}
 
+#cd ${WORKING_DIR}/repo &>> ${BUILD_LOG}
+#echo "[A6I_BUILD_SERVER] Changing directory to $(pwd)" &>> ${BUILD_LOG}
+echo &>> ${BUILD_LOG}
 echo "[A6I_BUILD_SERVER] =========== python setup.py bdist_wheel" &>> ${BUILD_LOG}
 echo &>> ${BUILD_LOG}
 python setup.py bdist_wheel &>> ${BUILD_LOG} 2>/tmp/error

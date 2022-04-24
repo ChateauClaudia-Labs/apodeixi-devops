@@ -6,8 +6,8 @@
 pipeline_description() {
     echo "
     Flow type:                          Docker flow
-    Apodexi version built:              v0.9.7
-    Packaged as:                        Docker container for image 'apodeixi:latest'
+    Apodexi version built:              Alex's 'dev' branch in host CC-Labs-2
+    Packaged as:                        Docker container for image 'apodeixi:dev'
     Deployed to:                        Local Linux host (same host in which pipeline is run)
     Secrets:                            ${SECRETS_FOLDER}
     Collaboration area:                 ${COLLABORATION_AREA}
@@ -18,17 +18,22 @@ pipeline_description() {
 
 # Single-line description suitable for use when listing multiple pipelines
 pipeline_short_description() {
-    echo "Deploys Apodeixi v0.9.7 as a Linux container locally"
+    echo "Deploys local Apodeixi dev branch as a Linux container (for user Alex in host CC-Labs-2)"
 }
 
 export UBUNTU_IMAGE="ubuntu:20.04"
 export PYTHON_VERSION="3.9"
 
 # Release version that is to be built
-export APODEIXI_GIT_BRANCH="v0.9.7"
-export APODEIXI_VERSION="0.9.7"
+export APODEIXI_GIT_BRANCH="dev"
+export APODEIXI_VERSION="dev"
 
-export APODEIXI_GIT_URL="https://github.com/ChateauClaudia-Labs/apodeixi.git"
+# The build container will not be able to reference the git repo we want to build, since the container won't
+# have access to what, from its perspective, is a remote machine containing the repo.
+# So instead, by setting $MOUNT_APODEIXI_GIT_PROJECT, the pipeline will mount this remote directory
+# $APODEIXI_GIT_URL onto a folder inside the container
+export MOUNT_APODEIXI_GIT_PROJECT=1
+export APODEIXI_GIT_URL="/mnt/c/Users/aleja/Documents/Code/chateauclaudia-labs/apodeixi/project"
 
 # Define which server image to use for the build. Determines version of Ubuntu and Python for the container where the build runs
 export A6I_BUILD_SERVER="a6i-build-server"
@@ -36,7 +41,7 @@ export A6I_BUILD_SERVER="a6i-build-server"
 # Defines the name (& tag) for the Apodeixi image to be created by the pipeline. If there is no tag, Docker will
 # by default put a tag of ":latest"
 #
-APODEIXI_IMAGE="apodeixi"
+APODEIXI_IMAGE="apodeixi:dev"
 
 # Defines what Apodeixi environment is being mounted in the Apodeixi container by this pipeline
 #
