@@ -18,7 +18,7 @@ SECONDS=0
 echo "${INFO_PROMPT} ... Determining approach for how container can access the GIT repo:"
 if [ ! -z ${MOUNT_APODEIXI_GIT_PROJECT} ]
     then
-        echo "${INFO_PROMPT}        = by mounting this drive:"
+        echo "${INFO_PROMPT}        => by mounting this drive:"
         echo "${INFO_PROMPT}        => ${APODEIXI_GIT_URL}"
         if [ ! -d ${APODEIXI_GIT_URL} ]
             then
@@ -30,8 +30,6 @@ if [ ! -z ${MOUNT_APODEIXI_GIT_PROJECT} ]
         fi
         export APODEIXI_URL_CLONED_BY_CONTAINER="/home/apodeixi"
         export GIT_REPO_MOUNT_DOCKER_OPTION="-v ${APODEIXI_GIT_URL}:${APODEIXI_URL_CLONED_BY_CONTAINER}"
-        echo
-        echo 
     else
         echo "${INFO_PROMPT}        => from this URL:"
         echo "${INFO_PROMPT}        => ${APODEIXI_GIT_URL}"

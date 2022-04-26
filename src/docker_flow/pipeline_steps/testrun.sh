@@ -16,14 +16,13 @@ fi
 
 abort_testrun_on_error() {
 if [[ $? != 0 ]]; then
-    error=$(</tmp/error)
+    #error=$(</tmp/error)
     echo >/dev/stderr
     echo "${ERR_PROMPT} ${error}" &>> ${TEST_LOG}
-    # Signal error again, this time for caller to catch, but limiting error to caller to just the first 500 characters.
+    # Signal error again, this time for caller to catch, but limiting error to caller to just the last 5 lines.
     # If caller wants to see all the error message, caller can go to the logs
     echo "Aborting testrun. Here is the error message (cut down to last 5 lines):"  >/dev/stderr
     echo >/dev/stderr
-    #echo "${error:-500:}"  >/dev/stderr
     tail -n 5 /tmp/error >/dev/stderr
     echo >/dev/stderr 
     exit 1
@@ -31,7 +30,9 @@ fi
 }
 
 WORKING_DIR="/home/work"
-mkdir ${WORKING_DIR}
+if [ ! -d "${WORKING_DIR}" ]; then
+    mkdir ${WORKING_DIR}
+fi
 
 export TEST_LOG="${LOGS_DIR}/${TIMESTAMP}_testrun.txt"
 
@@ -93,15 +94,17 @@ echo "[A6I_TEST_CONTAINER] Python version is $(python --version)" &>> ${TEST_LOG
 echo "[A6I_TEST_CONTAINER] Python path is $(which python)" &>> ${TEST_LOG}
 echo &>> ${TEST_LOG}
 
-echo &>> ${TEST_LOG}
 echo "[A6I_TEST_CONTAINER] =========== python -m unittest" &>> ${TEST_LOG}
 # Initialize Bash's `SECONDS` timer so that at the end we can compute how long this action took
 SECONDS=0
 echo &>> ${TEST_LOG}
-python -m unittest &>> ${TEST_LOG} 2>/tmp/error
+python -m unittest 1>> ${TEST_LOG} 2>/tmp/error
+#  GOTCHA: For some bizarre reason, unittest seems to send the test results (even when passing) to the error
+# stream, so if we want that in the log we need to add them to the log by hand
+cat /tmp/error >> ${TEST_LOG}
 abort_testrun_on_error
 # Check if tests passed. We know there is a failure if the next-to-last line is something like "FAILED (failures=1, errors=16)"
-test_status= $(tail -n 2 ${TEST_LOG})
+test_status=$(tail -n 5 ${TEST_LOG})
 if grep -q "FAILED" <<< "$test_status"
     then
         echo "Aborting testrun because not all tests passed"  >/dev/stderr

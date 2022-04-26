@@ -83,8 +83,8 @@ SECONDS=0
 
 echo "${INFO_PROMPT} About to start Apodeixi test container..."
 
-# Comment this environment variable if we want to keep the build container (e.g., to inspect problems) after using build is over
-export REMOVE_CONTAINER_WHEN_DONE="--rm"
+# Comment this environment variable if we want to keep the test container (e.g., to inspect problems) after this script ends
+export REMOVE_CONTAINER_WHEN_DONE=1
 
 echo "${INFO_PROMPT} ... Determining approach for how container can access the GIT testdb repo:"
 if [ ! -z ${MOUNT_APODEIXI_GIT_PROJECT} ]
@@ -107,12 +107,14 @@ if [ ! -z ${MOUNT_APODEIXI_GIT_PROJECT} ]
         export APODEIXI_TESTDB_URL_CLONED_BY_CONTAINER="${APODEIXI_TESTDB_GIT_URL}"
 fi
 
-# APODEIXI_TESTDB_GIT_URL
-docker run ${REMOVE_CONTAINER_WHEN_DONE} \
-            -e TIMESTAMP=${TIMESTAMP} -e APODEIXI_GIT_BRANCH=${APODEIXI_GIT_BRANCH} \
+# Comments on these options to starting the container:
+#   - $APODEIXI_CONFIG_DIRECTORY environment varialbe is not needed for tests, but saves setup if we have to 
+#       debug within the container
+#
+docker run  -e TIMESTAMP=${TIMESTAMP} -e APODEIXI_GIT_BRANCH=${APODEIXI_GIT_BRANCH} \
             -e APODEIXI_TESTDB_GIT_URL=${APODEIXI_TESTDB_URL_CLONED_BY_CONTAINER} \
             -e INJECTED_CONFIG_DIRECTORY=/home/apodeixi_testdb_config \
-            -e APODEIXI_CONFIG_DIRECTORY=/home/apodeixi_testdb_config \ # Not needed for tests, but saves setup if we have to debug within the container
+            -e APODEIXI_CONFIG_DIRECTORY=/home/apodeixi_testdb_config \
             -e UBUNTU_PYTHON_PACKAGE=${UBUNTU_PYTHON_PACKAGE} \
             --hostname "APO-TESTRUNNER-${TIMESTAMP}" \
             -v ${PIPELINE_STEP_OUTPUT}:/home/output -v ${PIPELINE_SCRIPTS}:/home/scripts \
@@ -146,10 +148,15 @@ if [[ $? != 0 ]]; then
     exit 1
 fi
 echo
-echo "${INFO_PROMPT} Testrun was successful. This was the final 100 characters of output:"
-echo "${INFO_PROMPT} ...stopping test container..."
-echo "${INFO_PROMPT} ...stopped test container $(docker stop ${APODEIXI_CONTAINER})"
-echo
+echo "${INFO_PROMPT} Testrun was successful"
+
+if [ ! -z ${REMOVE_CONTAINER_WHEN_DONE} ]
+    then
+        echo "${INFO_PROMPT} ...stopping test container..."
+        echo "${INFO_PROMPT} ...stopped test container $(docker stop ${APODEIXI_CONTAINER})"
+        echo "${INFO_PROMPT} ...removed test container $(docker rm ${APODEIXI_CONTAINER})"
+        echo
+fi
 
 # Compute how long we took in this script
 duration=$SECONDS
