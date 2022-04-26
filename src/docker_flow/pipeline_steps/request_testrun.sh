@@ -20,68 +20,140 @@
 
 # Apodeixi environment settings
 
-source ./common.sh
+export A6I_DEVOPS_ROOT="$( cd "$( dirname $0 )/../../../" >/dev/null 2>&1 && pwd )"
+export PIPELINE_SCRIPTS="${A6I_DEVOPS_ROOT}/src/docker_flow/pipeline_steps"
 
-export TEST_DB="test_db"
-export ROOT_FOLDER="/mnt/c/Users/aleja/Documents/Code/chateauclaudia-labs/apodeixi"
-export ROOT_FOLDER_IN_WINDOWS="C:/Users/aleja/Documents/Code/chateauclaudia-labs/apodeixi"
-export SED_DELIM="#" # Must be a character *not present* in the ROOT_FOLDER, so that SED can use later in this script
+source ${PIPELINE_SCRIPTS}/common.sh
 
-export SECRETS_FOLDER=${ROOT_FOLDER}/${TEST_DB}/secrets
-export COLLABORATION_AREA=${ROOT_FOLDER}/${TEST_DB}/share-point
-export KNOWLEDGE_BASE_FOLDER=${ROOT_FOLDER}/${TEST_DB}/knowledge-base
+echo
+echo "${INFO_PROMPT} ---------------- Starting testrun step"
+echo
+# Initialize Bash's `SECONDS` timer so that at the end we can compute how long this sript took
+SECONDS=0
+
+#export LOCAL_TEST_DB="/mnt/c/Users/aleja/Documents/Code/chateauclaudia-labs/apodeixi/test_db"
+#export LOCAL_TEST_DB_IN_WINDOWS="C:/Users/aleja/Documents/Code/chateauclaudia-labs/apodeixi"
+#export SED_DELIM="#" # Must be a character *not present* in the ROOT_FOLDER, so that SED can use later in this script
+
 
 # We expect the test database to alreay have an `apodeixi_config.toml` file geared to development-time testing.
 # That means that the paths referenced in that `apodeixi_config.toml` file are expected to include hard-coded
-# directories under the ${ROOT_FOLDER}.
+# directories for the developer's machine.
 #
 # These hard-coded directories in the host won't work when the tests are run inside the Apodeixi container, so we 
 # will have to replace them by paths in the container file system. However, we don't want to modify the
 # test database's `apodeixi_config.toml` file since its host hard-coded paths are needed at development time.
-# Therefore, we:
-#   1. Make a temporary copy of the test database's `apodeixi_config.toml` to a tmp subdirectory
-#   2. Modify the paths in the copy, rendering the copy a "container-friendly" version of `apodeixi_config.toml`
-#   3. Mount to the container the tmp directory containing the containfer-friedly copy of `apodeixi_config.toml`.
-#      This mount needs to be done to the folder inside the container where the integration test code will expect
-#      for it to exist. This folder is defined in apodeixi.testing_framework.a6i_skeleton_test.py, to be
-#      equal to '../../../../test_db', with the path relative to that of `a6i_skeleton_test.py` in the container,
-#      which is 
-#           /usr/local/lib/python3.9/dist-packages/apodeixi/testing_framework/a6i_skeleton_test.py
+# Therefore, the container will apply this logic when running testrun.sh:
 #
-#      because of the way how pip installed Apodeixi inside the container. Therefore, doing a '../../../../test_db'
-#      means that we expect the container-friendly Apodeixi config file to be in 
+#   1. Clone the GIT repo that contains the test database into /home/work, creating /home/work/apodeixi-testdb inside
+#      the container
+#   2. Rely on the environment variable $INJECTED_CONFIG_DIRECTORY to locate the folder where the Apodeixi configuration
+#      file resides. 
+#      This environment variable is needed to address the following problem with Apodeixi's test harness, and specifcially by
+#      apodeixi.testing_framework.a6i_skeleton_test.py:
 #
-#       /usr/local/lib/test_db/apodeixi_config.toml
+#           The test harness by default assumes that the Apodeixi configuration is found in 
 #
-#      That is the container folder onto which we must mount the temporary folder containing the modified
-#      (i.e., container-friendly) version of `apodeixi_config.toml`
+#                    '../../../../test_db'
 #
-export TMP_CONFIG_DIRECTORY=${ROOT_FOLDER}/${TEST_DB}/tmp
+#           with the path relative to that of `a6i_skeleton_test.py` in the container, which is 
+#
+#                   /usr/local/lib/python3.9/dist-packages/apodeixi/testing_framework/a6i_skeleton_test.py
+#
+#      because of the way how pip installed Apodeixi inside the container. 
+#
+#      This is addresed by:
+#           - setting the environment variable $INJECTED_CONFIG_DIRECTORY to /home/apodeixi_testdb_config
+#           - this will cause the test harness to look for Apodeixi's configuration in the folder $INJECTED_CONFIG_DIRECTORY
+#           - additionally, read the value of another environment variable, $TEST_APODEIXI_CONFIG_DIRECTORY, from the
+#             pipeline definition (in pipeline_album/<pipeline_id>/pipeline_definition.sh)
+#           - this way the pipeline's choice for what apodeixi_config.toml to use for testing will come from looking
+#             in $TEST_APODEIXI_CONFIG_DIRECTORY in the host
+#           - lastly, we mount $TEST_APODEIXI_CONFIG_DIRECTORY as /home/apodeixi_testdb_config in the container, which is
+#             where the container-run test harness will expect it (since that's the value of $INJECTED_CONFIG_DIRECTORY)
+#
 
-cp ${ROOT_FOLDER}/${TEST_DB}/apodeixi_config.toml ${TMP_CONFIG_DIRECTORY}
+#export TMP_CONFIG_DIRECTORY=${ROOT_FOLDER}/${TEST_DB}/tmp
+
+#cp ${ROOT_FOLDER}/${TEST_DB}/apodeixi_config.toml ${TMP_CONFIG_DIRECTORY}
 
 # GOTCHA: use double quotes as parameter to sed, not single quotes, so that the environment variables get interpolated
 #       as explained in https://stackoverflow.com/questions/6697753/difference-between-single-and-double-quotes-in-bash
-sed -i "s${SED_DELIM}${ROOT_FOLDER_IN_WINDOWS}${SED_DELIM}/home/apodeixi${SED_DELIM}g" ${TMP_CONFIG_DIRECTORY}/apodeixi_config.toml
+#sed -i "s${SED_DELIM}${LOCAL_TEST_DB_IN_WINDOWS}${SED_DELIM}/home/apodeixi-testdb${SED_DELIM}g" ${TMP_CONFIG_DIRECTORY}/apodeixi_config.toml
 
-echo "About to start Apodeixi test container..."
+echo "${INFO_PROMPT} About to start Apodeixi test container..."
 
 # Comment this environment variable if we want to keep the build container (e.g., to inspect problems) after using build is over
 export REMOVE_CONTAINER_WHEN_DONE="--rm"
 
-docker run ${REMOVE_CONTAINER_WHEN_DONE} \
-            -e INJECTED_CONFIG_DIRECTORY=/usr/local/lib/test_db \
-            -v ${ROOT_FOLDER}/${TEST_DB}:/home/apodeixi/test_db  \
-            -v ${TMP_CONFIG_DIRECTORY}:/usr/local/lib/test_db \
-            apodeixi & # run in the background so rest of this script can proceed
+echo "${INFO_PROMPT} ... Determining approach for how container can access the GIT testdb repo:"
+if [ ! -z ${MOUNT_APODEIXI_GIT_PROJECT} ]
+    then
+        echo "${INFO_PROMPT}        = by mounting this drive:"
+        echo "${INFO_PROMPT}        => ${APODEIXI_TESTDB_GIT_URL}"
+        if [ ! -d ${APODEIXI_TESTDB_GIT_URL} ]
+            then
+                echo "${ERR_PROMPT} Directory doesn't exist, so can't mount it:"
+                echo "      ${APODEIXI_TESTDB_GIT_URL}"
+                echo
+                echo echo "${ERR_PROMPT} Aborting testrun..."
+                exit 1
+        fi
+        export APODEIXI_TESTDB_URL_CLONED_BY_CONTAINER="/home/apodeixi-testdb"
+        export GIT_REPO_MOUNT_DOCKER_OPTION="-v ${APODEIXI_TESTDB_GIT_URL}:${APODEIXI_TESTDB_URL_CLONED_BY_CONTAINER}"
+    else
+        echo "${INFO_PROMPT}        => from this URL:"
+        echo "${INFO_PROMPT}        => ${APODEIXI_TESTDB_GIT_URL}"
+        export APODEIXI_TESTDB_URL_CLONED_BY_CONTAINER="${APODEIXI_TESTDB_GIT_URL}"
+fi
 
-echo "...waiting for Apodeixi test container to start..."
+# APODEIXI_TESTDB_GIT_URL
+docker run ${REMOVE_CONTAINER_WHEN_DONE} \
+            -e TIMESTAMP=${TIMESTAMP} -e APODEIXI_GIT_BRANCH=${APODEIXI_GIT_BRANCH} \
+            -e APODEIXI_TESTDB_GIT_URL=${APODEIXI_TESTDB_URL_CLONED_BY_CONTAINER} \
+            -e INJECTED_CONFIG_DIRECTORY=/home/apodeixi_testdb_config \
+            -e APODEIXI_CONFIG_DIRECTORY=/home/apodeixi_testdb_config \ # Not needed for tests, but saves setup if we have to debug within the container
+            -e UBUNTU_PYTHON_PACKAGE=${UBUNTU_PYTHON_PACKAGE} \
+            --hostname "APO-TESTRUNNER-${TIMESTAMP}" \
+            -v ${PIPELINE_STEP_OUTPUT}:/home/output -v ${PIPELINE_SCRIPTS}:/home/scripts \
+            -v $TEST_APODEIXI_CONFIG_DIRECTORY:/home/apodeixi_testdb_config \
+            ${GIT_REPO_MOUNT_DOCKER_OPTION} \
+            ${APODEIXI_IMAGE} & 2>/tmp/error # run in the background so rest of this script can proceed
+abort_on_error
+
+echo "${INFO_PROMPT} ...waiting for Apodeixi test container to start..."
 sleep 3
-export APODEIXI_CONTAINER=$(docker ps -q -l)
-echo "Apodeixi test container ${APODEIXI_CONTAINER} up and running..."
+
+export APODEIXI_CONTAINER=$(docker ps -q -l) 2>/tmp/error
+abort_on_error
+
+echo
+echo "${INFO_PROMPT} Apodeixi test container ${APODEIXI_CONTAINER} up and running..."
+echo
+echo "${INFO_PROMPT} Attempting to run tests for Apodeixi branch ${APODEIXI_GIT_BRANCH} using container ${APODEIXI_CONTAINER}..."
+echo "${INFO_PROMPT}            (this might take a 1-2 minutes...)"
+
+docker exec ${APODEIXI_CONTAINER} /bin/bash /home/scripts/testrun.sh 2>/tmp/error
+# We don't use the generic function ./common.sh::abort_on_error because we want to warn the user that a rogue container
+# was left running, so we manually write the code to catch and handle the exception
+if [[ $? != 0 ]]; then
+    error=$(</tmp/error)
+    echo "${ERR_PROMPT} ${error}"
+    echo
+    echo "${ERR_PROMPT} Due to above error, cleanup wasn't done. Container ${APODEIXI_CONTAINER} needs to be manually stopped"
+    echo 
+    echo "${ERR_PROMPT} For more detail on error, check logs under ${PIPELINE_STEP_OUTPUT}"
+    exit 1
+fi
+echo
+echo "${INFO_PROMPT} Testrun was successful. This was the final 100 characters of output:"
+echo "${INFO_PROMPT} ...stopping test container..."
+echo "${INFO_PROMPT} ...stopped test container $(docker stop ${APODEIXI_CONTAINER})"
 echo
 
-# To run tests, create a script to run in the container that will:
-#   1. cd to /usr/local/lib/python3.9/dist-packages/apodeixi
-#   2. python -m unittest
-
+# Compute how long we took in this script
+duration=$SECONDS
+echo
+echo "${INFO_PROMPT} ---------------- Completed testrun step in $duration sec"
+echo
+echo "${INFO_PROMPT} Check logs and distribution under ${PIPELINE_STEP_OUTPUT}"

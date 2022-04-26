@@ -22,6 +22,12 @@ source ${PIPELINE_SCRIPTS}/common.sh
 export UBUNTU_IMAGE="ubuntu:20.04"
 export PYTHON_VERSION="3.9"
 
+LOGS_DIR="${PIPELINE_STEP_OUTPUT}/logs" # This is a mount of a directory in host machine, so it might already exist
+if [ ! -d "${LOGS_DIR}" ]; then
+  mkdir ${LOGS_DIR}
+fi
+export PROVISIONING_LOG="${LOGS_DIR}/${TIMESTAMP}_provisioning.txt"
+
 echo
 echo "${INFO_PROMPT} ---------------- Starting provisioning step"
 echo
@@ -40,7 +46,9 @@ SECONDS=0
 export APODEIXI_DIST="${PIPELINE_STEP_INTAKE}/dist"
 export PROVISIONING_DOCKERFILE="${A6I_DEVOPS_ROOT}/src/docker_flow/docker/apodeixi_server/Dockerfile"
 export WORK_FOLDER="${PIPELINE_STEP_OUTPUT}/provisioning_work"
-mkdir ${WORK_FOLDER}
+if [ ! -d "${WORK_FOLDER}" ]; then
+    mkdir ${WORK_FOLDER}
+fi
 
 echo "${INFO_PROMPT} Copying Dockerfile to work folder"
 cp ${PROVISIONING_DOCKERFILE} ${WORK_FOLDER} 2>/tmp/error
@@ -57,13 +65,19 @@ echo "${INFO_PROMPT} Switching directory to work folder"
 cd ${WORK_FOLDER}
 
 echo "${INFO_PROMPT} Downlod pip to work folder"
-curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+echo                                                                            &>> ${PROVISIONING_LOG}
+echo "=============== Output from 'curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py"  &>> ${PROVISIONING_LOG}
+echo                                                                            &>> ${PROVISIONING_LOG}
+curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py                         &>> ${PROVISIONING_LOG}
 
 echo "${INFO_PROMPT} Build Apodeixi image '${APODEIXI_IMAGE}'"
+echo                                                                            &>> ${PROVISIONING_LOG}
+echo "=============== Output from building Apodeixi image '${APODEIXI_IMAGE}'"  &>> ${PROVISIONING_LOG}
+echo                                                                            &>> ${PROVISIONING_LOG}
 docker build --build-arg UBUNTU_IMAGE \
             --build-arg PYTHON_VERSION \
             --build-arg APODEIXI_VERSION \
-            -t ${APODEIXI_IMAGE} ${WORK_FOLDER} 2>/tmp/error
+            -t ${APODEIXI_IMAGE} ${WORK_FOLDER} 1>> ${PROVISIONING_LOG} 2>/tmp/error
 abort_on_error
 
 # Compute how long we took in this script

@@ -23,17 +23,19 @@ pipeline_short_description() {
 
 export UBUNTU_IMAGE="ubuntu:20.04"
 export PYTHON_VERSION="3.9"
+export UBUNTU_PYTHON_PACKAGE="python3.9"
 
 # Release version that is to be built
 export APODEIXI_GIT_BRANCH="dev"
-export APODEIXI_VERSION="dev"
+export APODEIXI_VERSION="0.9.8"
 
 # The build container will not be able to reference the git repo we want to build, since the container won't
 # have access to what, from its perspective, is a remote machine containing the repo.
 # So instead, by setting $MOUNT_APODEIXI_GIT_PROJECT, the pipeline will mount this remote directory
 # $APODEIXI_GIT_URL onto a folder inside the container
 export MOUNT_APODEIXI_GIT_PROJECT=1
-export APODEIXI_GIT_URL="/mnt/c/Users/aleja/Documents/Code/chateauclaudia-labs/apodeixi/project"
+export APODEIXI_GIT_URL="/mnt/c/Users/aleja/Documents/Code/chateauclaudia-labs/a6i_repos/apodeixi"
+export APODEIXI_TESTDB_GIT_URL="/mnt/c/Users/aleja/Documents/Code/chateauclaudia-labs/a6i_repos/apodeixi-testdb"
 
 # Define which server image to use for the build. Determines version of Ubuntu and Python for the container where the build runs
 export A6I_BUILD_SERVER="a6i-build-server"
@@ -52,3 +54,5 @@ export COLLABORATION_AREA=${A6I_DEVOPS_ROOT}/../${ENVIRONMENT}/collaboration_are
 export KNOWLEDGE_BASE_FOLDER=${A6I_DEVOPS_ROOT}/../${ENVIRONMENT}/kb
 
 export APODEIXI_CONFIG_DIRECTORY=${PIPELINE_ALBUM}/${PIPELINE_ID}
+
+export TEST_APODEIXI_CONFIG_DIRECTORY=${PIPELINE_ALBUM}/${PIPELINE_ID}/apodeixi_testdb_config

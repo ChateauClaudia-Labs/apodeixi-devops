@@ -3,14 +3,12 @@
 # This script is meant to run inside the build server container.
 #
 
-# NB: /home/output is mounted on this container's host filesystem (see run_build_step.sh)
+# NB: /home/output is mounted on this container's host filesystem
 #
 LOGS_DIR="/home/output/logs" # This is a mount of a directory in host machine, so it might already exist
 if [ ! -d "${LOGS_DIR}" ]; then
   mkdir ${LOGS_DIR}
 fi
-
-#export A6I_BUILD_SERVER="a6i-build-server"
 
 WORKING_DIR="/home/work"
 mkdir ${WORKING_DIR}
@@ -30,6 +28,8 @@ echo "[A6I_BUILD_SERVER] Current user is is $(whoami)" &>> ${BUILD_LOG}
 echo &>> ${BUILD_LOG}
 
 echo "[A6I_BUILD_SERVER] =========== git clone  ${APODEIXI_GIT_URL} --branch ${APODEIXI_GIT_BRANCH}" &>> ${BUILD_LOG}
+# Initialize Bash's `SECONDS` timer so that at the end we can compute how long this action took
+SECONDS=0
 echo &>> ${BUILD_LOG}
 git clone  ${APODEIXI_GIT_URL} --branch ${APODEIXI_GIT_BRANCH} 1>> ${BUILD_LOG} 2>/tmp/error
 if [[ $? != 0 ]]; then
@@ -39,6 +39,9 @@ if [[ $? != 0 ]]; then
     echo "Aborting build because: ${error}"  >/dev/stderr
     exit 1
 fi
+# Compute how long we took in this script
+duration=$SECONDS
+echo "[A6I_BUILD_SERVER]         Completed 'git clone' in $duration sec" &>> ${BUILD_LOG}
 
 
 echo &>> ${BUILD_LOG}
@@ -56,6 +59,8 @@ echo &>> ${BUILD_LOG}
 #echo "[A6I_BUILD_SERVER] Changing directory to $(pwd)" &>> ${BUILD_LOG}
 echo &>> ${BUILD_LOG}
 echo "[A6I_BUILD_SERVER] =========== python setup.py bdist_wheel" &>> ${BUILD_LOG}
+# Initialize Bash's `SECONDS` timer so that at the end we can compute how long this action took
+SECONDS=0
 echo &>> ${BUILD_LOG}
 python setup.py bdist_wheel &>> ${BUILD_LOG} 2>/tmp/error
 if [[ $? != 0 ]]; then
@@ -65,6 +70,10 @@ if [[ $? != 0 ]]; then
     echo "Aborting build because: ${error}"  >/dev/stderr
     exit 1
 fi
+# Compute how long we took in this script
+duration=$SECONDS
+echo "[A6I_BUILD_SERVER]         Completed 'python setup.py' in $duration sec" &>> ${BUILD_LOG}
+
 echo &>> ${BUILD_LOG}
 
 echo "[A6I_BUILD_SERVER] =========== copy wheel to host" &>> ${BUILD_LOG}

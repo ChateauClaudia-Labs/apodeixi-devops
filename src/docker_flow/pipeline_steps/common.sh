@@ -10,7 +10,9 @@
 abort_on_error() {
     if [[ $? != 0 ]]; then
       error=$(</tmp/error)
+      echo
       echo "${ERR_PROMPT} ${error}"
+      error
       echo "${ERR_PROMPT} For more detail on error, check logs under ${PIPELINE_STEP_OUTPUT}"
       exit 1
     fi
@@ -57,6 +59,7 @@ if [ -z "$RUN_TIMESTAMP" ]
   then
     export RUN_TIMESTAMP=${TIMESTAMP}
     echo "${INFO_PROMPT} Running pipeline '${PIPELINE_ID}' with run ID '${RUN_TIMESTAMP}'"
+    echo
 fi
 
 # Check pipeline album contains a pipeline with the given ID
@@ -68,7 +71,7 @@ fi
 # Used for writing all output produced by a pipeline run. 
 # In particular, it is passed as an external volume to containers used by the pipeline to e.g. build.
 # This could be injected if the environment variable was previously set (for example, test cases may want to
-# inject it to be a sub-area of test output's are), but if it has not been injected, we default it.
+# inject it to be a sub-area of test output's area), but if it has not been injected, we default it.
 if [ -z "${PIPELINE_STEP_OUTPUT}" ]
     then
         export PIPELINE_STEP_OUTPUT=${PIPELINE_ALBUM}/${PIPELINE_ID}/output/${RUN_TIMESTAMP}_pipeline_run
@@ -107,7 +110,9 @@ if [ -z "${PIPELINE_STEP_INTAKE}" ] # In this case use the default, if earlier c
 fi
 
 echo "${INFO_PROMPT} PIPELINE_STEP_INTAKE = ${PIPELINE_STEP_INTAKE}"
+echo
 echo "${INFO_PROMPT} PIPELINE_STEP_OUTPUT = ${PIPELINE_STEP_OUTPUT}"
+echo
 
 # Check pipeline folder in the album contains a definition script
   [ ! -f "${PIPELINE_ALBUM}/${PIPELINE_ID}/pipeline_definition.sh" ] && echo \
@@ -134,9 +139,14 @@ if [[ $? != 0 ]]; then
         echo "...aborting script '$0'"
     else
         echo "${ERR_PROMPT} Docker seems to be running but is giving errors:"
+        echo
         echo $error
     fi
     exit 1
 else
     echo "${INFO_PROMPT} Verified that Docker daemon is running"
 fi
+
+echo
+echo "${INFO_PROMPT} Will be working with Apodeixi image '${APODEIXI_IMAGE}'"
+echo

@@ -3,7 +3,7 @@
 folder = "/home/apodeixi/secrets"
 
 [knowledge-base]
-knowledge-base-root-folder = "/home/apodeixi/kb"
+knowledge-base-root-folder = "/home/apodeixi/knowledge-base"
 external-collaboration-folder = "/home/apodeixi/collaboration_area"
 
 [organization-settings]
