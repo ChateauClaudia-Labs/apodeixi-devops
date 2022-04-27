@@ -7,7 +7,7 @@ pipeline_description() {
     echo "
     Pipeline used during test of the provisioning pipeline step
 
-    Apodexi version built:              v0.9.7
+    Apodexi version built:              ${APODEIXI_GIT_BRANCH}
     Packaged as:                        Docker container from image 'apodeixi:test_1101'
     Deployed to:                        Local Linux host (same host in which pipeline is run)
     "
@@ -22,8 +22,8 @@ export UBUNTU_IMAGE="ubuntu:20.04"
 export PYTHON_VERSION="3.9"
 
 # Release version that is to be built
-export APODEIXI_GIT_BRANCH="v0.9.7"
-export APODEIXI_VERSION="0.9.7"
+export APODEIXI_GIT_BRANCH="v0.9.8"
+export APODEIXI_VERSION="0.9.8"
 
 export APODEIXI_GIT_URL="https://github.com/ChateauClaudia-Labs/apodeixi.git"
 

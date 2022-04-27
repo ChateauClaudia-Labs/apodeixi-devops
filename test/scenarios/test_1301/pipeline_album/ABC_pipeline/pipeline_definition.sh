@@ -7,7 +7,7 @@ pipeline_description() {
     echo "
     Pipeline used during test of the testrun pipeline step
 
-    Apodexi version built:              v0.9.7
+    Apodexi version built:              ${APODEIXI_GIT_BRANCH}
     Packaged as:                        Docker container from image 'apodeixi:test_1101'
     Deployed to:                        Local Linux host (same host in which pipeline is run)
     "
@@ -20,14 +20,15 @@ pipeline_short_description() {
 
 export UBUNTU_IMAGE="ubuntu:20.04"
 export PYTHON_VERSION="3.9"
+export UBUNTU_PYTHON_PACKAGE="python3.9"
 
 # Release version that is to be built
-export APODEIXI_GIT_BRANCH="v0.9.7"
-export APODEIXI_VERSION="0.9.7"
+export APODEIXI_GIT_BRANCH="v0.9.8"
+export APODEIXI_VERSION="0.9.8"
 
 export APODEIXI_GIT_URL="https://github.com/ChateauClaudia-Labs/apodeixi.git"
 
-export APODEIXI_TESTDB_GIT_URL="git@github.com:ChateauClaudia-Labs/apodeixi-testdb.git"
+export APODEIXI_TESTDB_GIT_URL="https://github.com/ChateauClaudia-Labs/apodeixi-testdb.git"
 
 # Define which server image to use for the build. Determines version of Ubuntu and Python for the container where the build runs
 export A6I_BUILD_SERVER="a6i-build-server"
@@ -47,10 +48,4 @@ APODEIXI_IMAGE="apodeixi:test_1101"
 
 #export APODEIXI_CONFIG_DIRECTORY=${PIPELINE_STEP_INTAKE}/${ENVIRONMENT}
 
-export TEST_APODEIXI_CONFIG_DIRECTORY=${PIPELINE_STEP_INTAKE}/apodeixi_testdb_config
-
-# This is needed to tell the deployment stage to stop Docker, since when using Bats to test code that starts
-# containers Bats will hang until the Docker container is stopped.
-#   For real production deployment, the pipeline_definition should never set this variable
-#
-export RUNNING_BATS=1
+export TEST_APODEIXI_CONFIG_DIRECTORY=${PIPELINE_ALBUM}/${PIPELINE_ID}/apodeixi_testdb_config

@@ -16,6 +16,12 @@ export PIPELINE_SCRIPTS="${A6I_DEVOPS_ROOT}/src/docker_flow/pipeline_steps"
 
 source ${PIPELINE_SCRIPTS}/common.sh
 
+LOGS_DIR="${PIPELINE_STEP_OUTPUT}/logs" # This is a mount of a directory in host machine, so it might already exist
+if [ ! -d "${LOGS_DIR}" ]; then
+  mkdir ${LOGS_DIR}
+fi
+export DEPLOYMENT_LOG="${LOGS_DIR}/${TIMESTAMP}_deployment.txt"
+
 echo
 echo "${INFO_PROMPT} ---------------- Starting deployment step"
 echo
@@ -70,14 +76,28 @@ abort_on_error
 
 echo "${INFO_PROMPT} Apodeixi container ${APODEIXI_CONTAINER} up and running..."
 
+# Run a couple of sanity checks that container is running fine and that the database was correctly mounted
+#
+command="apo --version && apo get assertions"
+echo "[A6I_CONTAINER] Will verify that apodeixi is up and running by executing this command:"   &>> ${DEPLOYMENT_LOG}
+echo "[A6I_CONTAINER]               $command"                                                   &>> ${DEPLOYMENT_LOG} 
+echo                                                                                            &>> ${DEPLOYMENT_LOG}
+docker exec ${APODEIXI_CONTAINER} /bin/bash -c "$command"                                       &>> ${DEPLOYMENT_LOG} 2>/tmp/error
+abort_on_error
+echo "${INFO_PROMPT} Verification that apodeixi is running properly gave this output when running the command"
+echo "${INFO_PROMPT}                    $command"
+echo "${INFO_PROMPT}    (output cut to last 10 lines)"
+echo
+tail -n 10 ${DEPLOYMENT_LOG}
+
 # GOTCHA - IF TESTING WITH BATS, WE MUST STOP THE CONTAINER TO PREVENT BATS FROM HANGING.
 #       There are other mechanisms in the Bats documentation to avoid hanging (basically, to close file descriptor 3)
 #       but they don't work in the context of Docker. Only thing I found works is stopping the container so that
 #       Bats then gets unblocked and finishes up the test
 if [ ! -z ${RUNNING_BATS} ]
     then
-        echo "${INFO_PROMPT} ...stopping build container..."
-        echo "${INFO_PROMPT} ...stopped build container $(docker stop ${APODEIXI_CONTAINER})"
+        echo "${INFO_PROMPT} ...stopping apodeixi container..."
+        echo "${INFO_PROMPT} ...stopped apodeixi container $(docker stop ${APODEIXI_CONTAINER})"
         echo
 fi
 

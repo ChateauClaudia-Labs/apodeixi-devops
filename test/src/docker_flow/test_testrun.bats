@@ -47,9 +47,18 @@ setup() {
     # "FAILED (errors=1)"
     # "FAILED (failures=1)"
     #
-    # and this should be output in all cases: "Ran 67 tests in 31.775s"
+    refute_line --partial "FAILED"
+    refute_line --partial "errors"
     refute_line --partial "failures"
-    assert_line --partial "Ran [0=9]+ tests in [0-9]+.[0-9]+s"
+    #
+    # and this should be output in all cases: "Ran 67 tests in 31.775s"
+    # We use Bash regular expressions
+    #
+    REGEX_EXPECTED="Ran [1-9][0-9]* tests in [0-9]+.[0-9]+s"
+    [[ ${lines[@]} =~ $REGEX_EXPECTED ]]
+    #assert_line --partial "Ran [1-9][0-9]* tests in [0-9]+.[0-9]+s"
+
+
 
 
     # Even if there are no errors in the log, if something more fatal happened, catch it here

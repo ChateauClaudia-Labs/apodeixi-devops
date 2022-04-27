@@ -1,10 +1,10 @@
 
 [secrets]
-folder = "/home/apodeixi-test-db/secrets"
+folder = "/home/work/apodeixi-testdb/secrets"
 
 [knowledge-base]
-knowledge-base-root-folder = "/home/apodeixi-testdb/knowledge-base"
-external-collaboration-folder = "/home/apodeixi-testdb/share-point"
+knowledge-base-root-folder = "/home/work/apodeixi-testdb/knowledge-base"
+external-collaboration-folder = "/home/work/apodeixi-testdb/share-point"
 
 [organization-settings]
 month-fiscal-year-starts = 6

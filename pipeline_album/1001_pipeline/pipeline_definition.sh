@@ -18,7 +18,7 @@ pipeline_description() {
 
 # Single-line description suitable for use when listing multiple pipelines
 pipeline_short_description() {
-    echo "Deploys Apodeixi v0.9.7 as a Linux container locally to UAT"
+    echo "Deploys Apodeixi v0.9.8 as a Linux container locally to UAT"
 }
 
 export UBUNTU_IMAGE="ubuntu:20.04"
@@ -26,8 +26,8 @@ export PYTHON_VERSION="3.9"
 export UBUNTU_PYTHON_PACKAGE="python3.9"
 
 # Release version that is to be built
-export APODEIXI_GIT_BRANCH="v0.9.7"
-export APODEIXI_VERSION="0.9.7"
+export APODEIXI_GIT_BRANCH="v0.9.8"
+export APODEIXI_VERSION="0.9.8"
 
 export APODEIXI_GIT_URL="https://github.com/ChateauClaudia-Labs/apodeixi.git"
 

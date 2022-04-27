@@ -20,6 +20,16 @@
 
 # Apodeixi environment settings
 
+unblock_bats() {
+    if [ ! -z ${RUNNING_BATS} ]
+        then
+            echo "${INFO_PROMPT} ...stopping test container..."
+            echo "${INFO_PROMPT} ...stopped test container $(docker stop ${APODEIXI_CONTAINER})"
+            echo "${INFO_PROMPT} ...removed test container $(docker rm ${APODEIXI_CONTAINER})"
+            echo
+    fi    
+}
+
 export A6I_DEVOPS_ROOT="$( cd "$( dirname $0 )/../../../" >/dev/null 2>&1 && pwd )"
 export PIPELINE_SCRIPTS="${A6I_DEVOPS_ROOT}/src/docker_flow/pipeline_steps"
 
@@ -145,12 +155,17 @@ if [[ $? != 0 ]]; then
     echo "${ERR_PROMPT} Due to above error, cleanup wasn't done. Container ${APODEIXI_CONTAINER} needs to be manually stopped"
     echo 
     echo "${ERR_PROMPT} For more detail on error, check logs under ${PIPELINE_STEP_OUTPUT}"
+    unblock_bats
     exit 1
 fi
 echo
 echo "${INFO_PROMPT} Testrun was successful"
 
-if [ ! -z ${REMOVE_CONTAINER_WHEN_DONE} ]
+# GOTCHA - IF TESTING WITH BATS, WE MUST STOP THE CONTAINER TO PREVENT BATS FROM HANGING.
+#       There are other mechanisms in the Bats documentation to avoid hanging (basically, to close file descriptor 3)
+#       but they don't work in the context of Docker. Only thing I found works is stopping the container so that
+#       Bats then gets unblocked and finishes up the test
+if [ ! -z ${REMOVE_CONTAINER_WHEN_DONE} ] || [ ! -z ${RUNNING_BATS} ]
     then
         echo "${INFO_PROMPT} ...stopping test container..."
         echo "${INFO_PROMPT} ...stopped test container $(docker stop ${APODEIXI_CONTAINER})"

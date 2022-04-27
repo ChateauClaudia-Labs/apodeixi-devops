@@ -25,6 +25,8 @@ if [[ $? != 0 ]]; then
     echo >/dev/stderr
     tail -n 5 /tmp/error >/dev/stderr
     echo >/dev/stderr 
+    #  Before exiting, make sure we save the full errors to the test log, so we can debug later
+    cat /tmp/error >> ${TEST_LOG}
     exit 1
 fi    
 }
@@ -70,6 +72,7 @@ echo "[A6I_TEST_CONTAINER] ...git successfully installed in container in $durati
 echo                                                        &>> ${TEST_LOG}
 
 echo "[A6I_TEST_CONTAINER] =========== git clone ${APODEIXI_TESTDB_GIT_URL} --branch ${APODEIXI_GIT_BRANCH}" &>> ${TEST_LOG}
+echo "[A6I_TEST_CONTAINER]              (current directory for git clone is $(pwd)"                     &>> ${TEST_LOG}
 # Initialize Bash's `SECONDS` timer so that at the end we can compute how long this action took
 SECONDS=0
 echo &>> ${TEST_LOG}
@@ -99,10 +102,10 @@ echo "[A6I_TEST_CONTAINER] =========== python -m unittest" &>> ${TEST_LOG}
 SECONDS=0
 echo &>> ${TEST_LOG}
 python -m unittest 1>> ${TEST_LOG} 2>/tmp/error
+abort_testrun_on_error
 #  GOTCHA: For some bizarre reason, unittest seems to send the test results (even when passing) to the error
 # stream, so if we want that in the log we need to add them to the log by hand
 cat /tmp/error >> ${TEST_LOG}
-abort_testrun_on_error
 # Check if tests passed. We know there is a failure if the next-to-last line is something like "FAILED (failures=1, errors=16)"
 test_status=$(tail -n 5 ${TEST_LOG})
 if grep -q "FAILED" <<< "$test_status"
@@ -111,7 +114,7 @@ if grep -q "FAILED" <<< "$test_status"
         echo >/dev/stderr
         echo "${test_status}"  >/dev/stderr
         echo >/dev/stderr
-        echo exit 1
+        exit 1
     else
         echo "Status of test run:"  >/dev/stdout
         echo >/dev/stdout

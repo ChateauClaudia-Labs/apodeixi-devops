@@ -12,7 +12,7 @@ abort_on_error() {
       error=$(</tmp/error)
       echo
       echo "${ERR_PROMPT} ${error}"
-      error
+      echo
       echo "${ERR_PROMPT} For more detail on error, check logs under ${PIPELINE_STEP_OUTPUT}"
       exit 1
     fi
