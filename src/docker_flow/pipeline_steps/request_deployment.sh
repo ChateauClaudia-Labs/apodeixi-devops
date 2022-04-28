@@ -12,9 +12,9 @@
 #               sudo service docker start
 #
 export A6I_DEVOPS_ROOT="$( cd "$( dirname $0 )/../../../" >/dev/null 2>&1 && pwd )"
-export PIPELINE_SCRIPTS="${A6I_DEVOPS_ROOT}/src/docker_flow/pipeline_steps"
+export PIPELINE_SCRIPTS="${A6I_DEVOPS_ROOT}/src"
 
-source ${PIPELINE_SCRIPTS}/common.sh
+source ${PIPELINE_SCRIPTS}/util/common.sh
 
 LOGS_DIR="${PIPELINE_STEP_OUTPUT}/logs" # This is a mount of a directory in host machine, so it might already exist
 if [ ! -d "${LOGS_DIR}" ]; then

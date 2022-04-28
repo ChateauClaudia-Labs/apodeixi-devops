@@ -7,6 +7,8 @@
 #
 #               sudo service docker start
 #
+export DOCKER_FILE_DIR="$( cd "$( dirname $0 )" >/dev/null 2>&1 && pwd )"
+
 export UBUNTU_IMAGE="ubuntu:20.04"
 
 export A6I_CONDABUILD_SERVER="a6i-condabuild-server"

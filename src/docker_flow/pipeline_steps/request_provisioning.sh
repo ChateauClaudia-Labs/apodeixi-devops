@@ -15,9 +15,9 @@
 #               docker run -it --rm apodeixi /bin/bash
 
 export A6I_DEVOPS_ROOT="$( cd "$( dirname $0 )/../../../" >/dev/null 2>&1 && pwd )"
-export PIPELINE_SCRIPTS="${A6I_DEVOPS_ROOT}/src/docker_flow/pipeline_steps"
+export PIPELINE_SCRIPTS="${A6I_DEVOPS_ROOT}/src"
 
-source ${PIPELINE_SCRIPTS}/common.sh
+source ${PIPELINE_SCRIPTS}/util/common.sh
 
 export UBUNTU_IMAGE="ubuntu:20.04"
 export PYTHON_VERSION="3.9"
@@ -32,7 +32,7 @@ echo
 echo "${INFO_PROMPT} ---------------- Starting provisioning step"
 echo
 echo "${INFO_PROMPT} UBUNTU_IMAGE=${UBUNTU_IMAGE}"
-echo "${INFO_PROMPT} INFO_PROMPT=${PYTHON_VERSION}"
+echo "${INFO_PROMPT} PYTHON_VERSION=${PYTHON_VERSION}"
 echo
 # Initialize Bash's `SECONDS` timer so that at the end we can compute how long this sript took
 SECONDS=0

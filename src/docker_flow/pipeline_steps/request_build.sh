@@ -2,9 +2,9 @@
 
 export A6I_DEVOPS_ROOT="$( cd "$( dirname $0 )/../../../" >/dev/null 2>&1 && pwd )"
 
-export PIPELINE_SCRIPTS="${A6I_DEVOPS_ROOT}/src/docker_flow/pipeline_steps"
+export PIPELINE_SCRIPTS="${A6I_DEVOPS_ROOT}/src"
 
-source ${PIPELINE_SCRIPTS}/common.sh
+source ${PIPELINE_SCRIPTS}/util/common.sh
 
 # Comment this environment variable if we want to keep the build container (e.g., to inspect problems) after using build is over
 export REMOVE_CONTAINER_WHEN_DONE="--rm" 
@@ -43,7 +43,7 @@ docker run ${REMOVE_CONTAINER_WHEN_DONE} \
             --hostname "APO-BUILDER-${TIMESTAMP}" \
             -e TIMESTAMP=${TIMESTAMP} -e APODEIXI_GIT_BRANCH=${APODEIXI_GIT_BRANCH} \
             -e APODEIXI_GIT_URL=${APODEIXI_URL_CLONED_BY_CONTAINER} \
-            -v ${PIPELINE_STEP_OUTPUT}:/home/output -v ${PIPELINE_SCRIPTS}:/home/scripts \
+            -v ${PIPELINE_STEP_OUTPUT}:/home/output -v ${PIPELINE_SCRIPTS}/docker_flow/pipeline_steps:/home/scripts \
             ${GIT_REPO_MOUNT_DOCKER_OPTION} \
             ${A6I_BUILD_SERVER} & 2>/tmp/error  # run in the background so rest of this script can proceed
 abort_on_error

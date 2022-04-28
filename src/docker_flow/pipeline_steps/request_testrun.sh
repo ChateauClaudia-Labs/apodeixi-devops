@@ -31,9 +31,9 @@ unblock_bats() {
 }
 
 export A6I_DEVOPS_ROOT="$( cd "$( dirname $0 )/../../../" >/dev/null 2>&1 && pwd )"
-export PIPELINE_SCRIPTS="${A6I_DEVOPS_ROOT}/src/docker_flow/pipeline_steps"
+export PIPELINE_SCRIPTS="${A6I_DEVOPS_ROOT}/src"
 
-source ${PIPELINE_SCRIPTS}/common.sh
+source ${PIPELINE_SCRIPTS}/util/common.sh
 
 echo
 echo "${INFO_PROMPT} ---------------- Starting testrun step"
@@ -127,7 +127,7 @@ docker run  -e TIMESTAMP=${TIMESTAMP} -e APODEIXI_GIT_BRANCH=${APODEIXI_GIT_BRAN
             -e APODEIXI_CONFIG_DIRECTORY=/home/apodeixi_testdb_config \
             -e UBUNTU_PYTHON_PACKAGE=${UBUNTU_PYTHON_PACKAGE} \
             --hostname "APO-TESTRUNNER-${TIMESTAMP}" \
-            -v ${PIPELINE_STEP_OUTPUT}:/home/output -v ${PIPELINE_SCRIPTS}:/home/scripts \
+            -v ${PIPELINE_STEP_OUTPUT}:/home/output -v ${PIPELINE_SCRIPTS}/docker_flow/pipeline_steps:/home/scripts \
             -v $TEST_APODEIXI_CONFIG_DIRECTORY:/home/apodeixi_testdb_config \
             ${GIT_REPO_MOUNT_DOCKER_OPTION} \
             ${APODEIXI_IMAGE} & 2>/tmp/error # run in the background so rest of this script can proceed

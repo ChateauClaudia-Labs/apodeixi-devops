@@ -2,11 +2,13 @@
 
 # This script has some common settings and logic applicable to all pipeline steps.
 # It is expected to be sourced by each pipeline step's request script. 
-# It requires that ${A6I_DEVOPS_ROOT} be set up prior to sourcing this script.
+# It requires that:
+#       1. ${A6I_DEVOPS_ROOT} be set up prior to sourcing this script.
 
 # Used to "catch exceptions", kind of, in the Bash programming environment.
 # Requirements:
 #   - Beforehand the error stream has been re-directored to /tmp/error (doing "2>/tmp/error" at the end of the previous command)
+#
 abort_on_error() {
     if [[ $? != 0 ]]; then
       error=$(</tmp/error)
@@ -147,6 +149,9 @@ else
     echo "${INFO_PROMPT} Verified that Docker daemon is running"
 fi
 
-echo
-echo "${INFO_PROMPT} Will be working with Apodeixi image '${APODEIXI_IMAGE}'"
-echo
+if [ ! -z ${APODEIXI_IMAGE} ]
+    then
+        echo
+        echo "${INFO_PROMPT} Will be working with Apodeixi image '${APODEIXI_IMAGE}'"
+        echo
+fi
