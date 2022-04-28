@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 
 export INFO_PROMPT="[APDO INFO]"
 export ERROR_PROMPT="[APDO ERROR]"

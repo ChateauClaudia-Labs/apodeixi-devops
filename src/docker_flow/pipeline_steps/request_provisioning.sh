@@ -64,13 +64,13 @@ abort_on_error
 echo "${INFO_PROMPT} Switching directory to work folder"
 cd ${WORK_FOLDER}
 
-echo "${INFO_PROMPT} Downlod pip to work folder"
+echo "${INFO_PROMPT} About to downlod pip to work folder..."
 echo                                                                            &>> ${PROVISIONING_LOG}
 echo "=============== Output from 'curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py"  &>> ${PROVISIONING_LOG}
 echo                                                                            &>> ${PROVISIONING_LOG}
 curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py                         &>> ${PROVISIONING_LOG}
 
-echo "${INFO_PROMPT} Build Apodeixi image '${APODEIXI_IMAGE}'"
+echo "${INFO_PROMPT} About to build Apodeixi image '${APODEIXI_IMAGE}'..."
 echo                                                                            &>> ${PROVISIONING_LOG}
 echo "=============== Output from building Apodeixi image '${APODEIXI_IMAGE}'"  &>> ${PROVISIONING_LOG}
 echo                                                                            &>> ${PROVISIONING_LOG}

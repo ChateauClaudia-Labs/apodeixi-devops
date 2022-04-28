@@ -1,8 +1,4 @@
-# To run tests, create a script to run in the container that will:
-#   1. cd to /usr/local/lib/python3.9/dist-packages/apodeixi
-#   2. python -m unittest
-
-#!/bin/sh
+#!/usr/bin/env bash
 
 # This script is meant to run inside the build server container.
 #

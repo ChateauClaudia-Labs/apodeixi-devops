@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # This script creates an image for a container that can be used to build Apodeixi
 #

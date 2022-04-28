@@ -1,6 +1,6 @@
 ARG UBUNTU_IMAGE
 FROM ${UBUNTU_IMAGE}
-RUN apt-get update
+RUN apt update && apt upgrade -y
 
 ARG APODEIXI_VERSION
 
@@ -15,8 +15,8 @@ COPY ./get-pip.py /home/tmp/
 #
 ARG PYTHON_VERSION
 # The Python install was failing until this `apt-get update` was added right before it
-RUN apt-get update 
-RUN apt-get install -y python${PYTHON_VERSION}
+RUN apt update 
+RUN apt install -y python${PYTHON_VERSION}
 
 RUN ln -s $(which python${PYTHON_VERSION}) /usr/bin/python
 
