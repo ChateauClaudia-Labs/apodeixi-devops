@@ -18,7 +18,7 @@ pipeline_description() {
 
 # Single-line description suitable for use when listing multiple pipelines
 pipeline_short_description() {
-    echo "Deploys Apodeixi v${APODEIXI_VERSION} as a Linux container locally to UAT"
+    echo "Deploys Apodeixi v${APODEIXI_VERSION} as a Linux container locally to ${ENVIRONMENT}"
 }
 
 export UBUNTU_IMAGE="ubuntu:20.04"
