@@ -31,7 +31,7 @@ if [ -z "$1" ]
     echo "${ERR_PROMPT} Pipeline id was not provided as an argument. It should be an integer id like '1001'"
     exit 1
 fi
-export PIPELINE_ID="$1_pipeline" # For example, '1001_pipeline'. This is a folder with parameters defining a particular pipeline   
+export PIPELINE_NAME="$1_pipeline" # For example, '1001_pipeline'. This is a folder with parameters defining a particular pipeline   
 
 # By default, we use the pipelines in this project unless a pipeline "album" has been injected. A pipeline "album"
 # is simply a folder with subfolders called <ID>_pipeline, where <ID> identifies a pipeline in the "album".
@@ -58,13 +58,13 @@ fi
 if [ -z "$RUN_TIMESTAMP" ]
   then
     export RUN_TIMESTAMP=${TIMESTAMP}
-    echo "${INFO_PROMPT} Running pipeline '${PIPELINE_ID}' with run ID '${RUN_TIMESTAMP}'"
+    echo "${INFO_PROMPT} Running pipeline '${PIPELINE_NAME}' with run ID '${RUN_TIMESTAMP}'"
     echo
 fi
 
 # Check pipeline album contains a pipeline with the given ID
-  [ ! -d "${PIPELINE_ALBUM}/${PIPELINE_ID}" ] && echo \
-  && echo "${ERR_PROMPT} '${PIPELINE_ALBUM}/${PIPELINE_ID}' does not exist" \
+  [ ! -d "${PIPELINE_ALBUM}/${PIPELINE_NAME}" ] && echo \
+  && echo "${ERR_PROMPT} '${PIPELINE_ALBUM}/${PIPELINE_NAME}' does not exist" \
   && echo \
   && exit 1
 
@@ -74,10 +74,10 @@ fi
 # inject it to be a sub-area of test output's area), but if it has not been injected, we default it.
 if [ -z "${PIPELINE_STEP_OUTPUT}" ]
     then
-        export PIPELINE_STEP_OUTPUT=${PIPELINE_ALBUM}/${PIPELINE_ID}/output/${RUN_TIMESTAMP}_pipeline_run
-        if [ ! -d "${PIPELINE_ALBUM}/${PIPELINE_ID}/output" ]
+        export PIPELINE_STEP_OUTPUT=${PIPELINE_ALBUM}/${PIPELINE_NAME}/output/${RUN_TIMESTAMP}_pipeline_run
+        if [ ! -d "${PIPELINE_ALBUM}/${PIPELINE_NAME}/output" ]
             then
-                mkdir "${PIPELINE_ALBUM}/${PIPELINE_ID}/output"
+                mkdir "${PIPELINE_ALBUM}/${PIPELINE_NAME}/output"
         fi
 fi
 
@@ -115,8 +115,8 @@ echo "${INFO_PROMPT} PIPELINE_STEP_OUTPUT = ${PIPELINE_STEP_OUTPUT}"
 echo
 
 # Check pipeline folder in the album contains a definition script
-  [ ! -f "${PIPELINE_ALBUM}/${PIPELINE_ID}/pipeline_definition.sh" ] && echo \
-  && echo "${ERR_PROMPT} '${PIPELINE_ALBUM}/${PIPELINE_ID}' is improperly configured:" \
+  [ ! -f "${PIPELINE_ALBUM}/${PIPELINE_NAME}/pipeline_definition.sh" ] && echo \
+  && echo "${ERR_PROMPT} '${PIPELINE_ALBUM}/${PIPELINE_NAME}' is improperly configured:" \
   && echo "${ERR_PROMPT} It should contain a 'pipeline_definition'.sh file " \
   && echo "with two functions called 'pipeline_description' and 'pipeline_short_description'" \
   && echo \
@@ -124,7 +124,7 @@ echo
 
 # Get the pipeline definition (i.e., set environment variables and initialize functions as per the definition for
 # the pipeline with id $1
-source "${PIPELINE_ALBUM}/${PIPELINE_ID}/pipeline_definition.sh"
+source "${PIPELINE_ALBUM}/${PIPELINE_NAME}/pipeline_definition.sh"
 
 # Check that Docker is running
 docker stats --no-stream 2>/tmp/error 1>/dev/null

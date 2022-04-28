@@ -33,7 +33,7 @@ export REMOVE_CONTAINER_WHEN_DONE="--rm"
 
 # Check that Apodeixi config file exists
 [ ! -f ${APODEIXI_CONFIG_DIRECTORY}/apodeixi_config.toml ] && echo \
-    && echo "${ERR_PROMPT} '${PIPELINE_ALBUM}/${PIPELINE_ID}' is improperly configured:" \
+    && echo "${ERR_PROMPT} '${PIPELINE_ALBUM}/${PIPELINE_NAME}' is improperly configured:" \
     && echo "${ERR_PROMPT} It expects Apodeixi config file, which doesn't exist:" \
     && echo "${ERR_PROMPT}     ${APODEIXI_CONFIG_DIRECTORY}/apodeixi_config.toml" \
     && echo \
@@ -41,19 +41,19 @@ export REMOVE_CONTAINER_WHEN_DONE="--rm"
 
 # Check that mounted volumes for the Apodeixi environment exist
 [ ! -d ${SECRETS_FOLDER} ] && echo \
-        && echo "${ERR_PROMPT} '${PIPELINE_ALBUM}/${PIPELINE_ID}' is improperly configured:" \
+        && echo "${ERR_PROMPT} '${PIPELINE_ALBUM}/${PIPELINE_NAME}' is improperly configured:" \
         && echo "${ERR_PROMPT} It expects a non-existent folder called "\
         && echo "    ${SECRETS_FOLDER}." \
         && echo \
         && exit 1
 [ ! -d ${COLLABORATION_AREA} ] && echo \
-        && echo "${ERR_PROMPT} '${PIPELINE_ALBUM}/${PIPELINE_ID}' is improperly configured:" \
+        && echo "${ERR_PROMPT} '${PIPELINE_ALBUM}/${PIPELINE_NAME}' is improperly configured:" \
         && echo "${ERR_PROMPT} It expects a non-existent a folder called " \
         && echo "    ${COLLABORATION_AREA}." \
         && echo \
         && exit 1
 [ ! -d ${KNOWLEDGE_BASE_FOLDER} ] && echo \
-    && echo "${ERR_PROMPT} '${PIPELINE_ALBUM}/${PIPELINE_ID}' is improperly configured:" \
+    && echo "${ERR_PROMPT} '${PIPELINE_ALBUM}/${PIPELINE_NAME}' is improperly configured:" \
     && echo "${ERR_PROMPT} It expects a non-existent a folder called " \
     && echo "    ${KNOWLEDGE_BASE_FOLDER}." \
         && echo \

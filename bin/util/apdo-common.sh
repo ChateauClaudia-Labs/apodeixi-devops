@@ -1,4 +1,5 @@
 
+export INFO_PROMPT="[APDO INFO]"
 export ERROR_PROMPT="[APDO ERROR]"
 
 cli_help() {
@@ -39,7 +40,7 @@ if [ -z "${PIPELINE_ALBUM}" ]
 fi
 
 
-# Check that there is a pipeline for this id. $1 should be ${PIPELINE_ALBUM} and $2 should be ${PIPELINE_ID}
+# Check that there is a pipeline for this id. $1 should be ${PIPELINE_ALBUM} and $2 should be ${PIPELINE_NAME}
 cli_pipeline_exists() {
   [ ! -d "${1}/${2}" ] && echo \
   && echo "${ERROR_PROMPT} '${2}' is not a valid ID for a pipeline" \
@@ -48,12 +49,30 @@ cli_pipeline_exists() {
   && exit 1
 }
 
-# Check that pipeline folder includes a pipeline definition. $1 should be ${PIPELINE_ALBUM} and $2 should be ${PIPELINE_ID}
+# Check that pipeline folder includes a pipeline definition. $1 should be ${PIPELINE_ALBUM} and $2 should be ${PIPELINE_NAME}
 cli_pipeline_def_exists() {
   [ ! -f "${1}/${2}/pipeline_definition.sh" ] && echo \
   && echo "${ERROR_PROMPT} '${2}' is improperly configured:" \
-  && echo "${ERROR_PROMPT} It should contain a 'pipeline_definition'.sh file " \
+  && echo "${ERROR_PROMPT} It should contain a 'pipeline_definition.sh' file " \
   && echo "with two functions called 'pipeline_description' and 'pipeline_short_description'" \
   && echo \
   && exit 1
+}
+
+# Check that pipeline folder includes the script that runs the pipeline. $1 should be ${PIPELINE_ALBUM} and $2 should be ${PIPELINE_NAME}
+cli_pipeline_run_exists() {
+  [ ! -f "${1}/${2}/execute_pipeline.sh" ] && echo \
+  && echo "${ERROR_PROMPT} '${2}' is improperly configured:" \
+  && echo "${ERROR_PROMPT} It should contain a 'execute_pipeline.sh' file responsible for running all steps of pipeline" \
+  && echo \
+  && exit 1
+}
+
+abort_pipeline_step_on_error() {
+    if [[ $? != 0 ]]; then
+      echo
+      echo "${ERROR_PROMPT} Pipeline aborted"
+      echo
+      exit 1
+    fi
 }

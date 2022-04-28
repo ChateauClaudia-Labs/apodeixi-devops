@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 export A6I_DEVOPS_ROOT="$( cd "$( dirname $0 )/../../../" >/dev/null 2>&1 && pwd )"
+
 export PIPELINE_SCRIPTS="${A6I_DEVOPS_ROOT}/src/docker_flow/pipeline_steps"
 
 source ${PIPELINE_SCRIPTS}/common.sh

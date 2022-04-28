@@ -8,18 +8,18 @@ source ${A6I_DEVOPS_ROOT}/bin/util/apdo-common.sh
 export ERR_MSG="pipeline ID must be given. Try 'apdo pipeline list' to view a list of available pipeline IDs"
 cli_argument_exists $1
 
-export PIPELINE_ID="$1_pipeline" # For example, '1001_pipeline'. This is a folder with parameters defining a particular pipeline 
+export PIPELINE_NAME="$1_pipeline" # For example, '1001_pipeline'. This is a folder with parameters defining a particular pipeline 
 
 # Check that there is a pipeline for this id
-cli_pipeline_exists ${PIPELINE_ALBUM} ${PIPELINE_ID}
+cli_pipeline_exists ${PIPELINE_ALBUM} ${PIPELINE_NAME}
 
 # Check that pipeline folder includes a pipeline definition
-cli_pipeline_def_exists ${PIPELINE_ALBUM} ${PIPELINE_ID}
+cli_pipeline_def_exists ${PIPELINE_ALBUM} ${PIPELINE_NAME}
 
 # Get definition (really more of a config) of the pipeline we are running
-source "${PIPELINE_ALBUM}/${PIPELINE_ID}/pipeline_definition.sh"
+source "${PIPELINE_ALBUM}/${PIPELINE_NAME}/pipeline_definition.sh"
 
 # Now show the information for the pipeline in question
 echo 
-echo "---------------------- ${PIPELINE_ID} Description "
+echo "---------------------- ${PIPELINE_NAME} Description "
 pipeline_description
