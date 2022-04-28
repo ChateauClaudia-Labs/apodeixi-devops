@@ -29,7 +29,7 @@ if [ ! -d "${LOGS_DIR}" ]; then
 fi
 export PIPELINE_LOG="${LOGS_DIR}/MASTER_LOG.txt"
 
-T1=$SECONDS
+START=$SECONDS
 echo "${INFO_PROMPT} Running pipeline ${PIPELINE_ID}"
 echo "${INFO_PROMPT}"
 echo "${INFO_PROMPT}    Pipeline description: $(pipeline_short_description)"
@@ -39,10 +39,8 @@ echo "${INFO_PROMPT}"
 source "${PIPELINE_ALBUM}/${PIPELINE_NAME}/execute_pipeline.sh"
 
 echo
-T2=$SECONDS
-duration=$((${T2} - ${T1}))
-echo "DEBUG T1=${T1}"
-echo "DEBUG T2=${T2}"
+END=$SECONDS
+duration=$((${END} - ${START}))
 echo "${INFO_PROMPT} DONE - pipeline ${PIPELINE_ID} completed in $duration sec"
 echo
 echo "${INFO_PROMPT} See logs at:"
