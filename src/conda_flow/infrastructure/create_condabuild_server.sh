@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# This script creates an image for a container that can be used to build Apodeixi
+# This script creates an image for a container that can be used to build a conda package for Apodeixi
 #
 #
 # As a precondition, the Docker daemon must be running. To start it in WSL2 Ubuntu, do someting like:
@@ -23,25 +23,28 @@ export SETUP_INFRA_LOG="${LOGS_DIR}/${TIMESTAMP}_setup_infra.txt"
 SECONDS=0
 
 echo
-echo "${INFO_PROMPT} ---------------- Building build server's image '${A6I_BUILD_SERVER}'"
+echo "${INFO_PROMPT} ---------------- Building condabuild server's image '${A6I_CONDABUILD_SERVER}'"
 echo
 echo "${INFO_PROMPT} UBUNTU_IMAGE=${UBUNTU_IMAGE}"
-echo "${INFO_PROMPT} UBUNTU_PYTHON_PACKAGE=${UBUNTU_PYTHON_PACKAGE}"
+echo "${INFO_PROMPT} ANACONDA_VERSION=${ANACONDA_VERSION}"
 echo
 
-export DOCKERFILE_DIR=${PIPELINE_SCRIPTS}/docker_flow/docker/build_server
+export DOCKERFILE_DIR=${PIPELINE_SCRIPTS}/conda_flow/docker/condabuild_server
 cd ${DOCKERFILE_DIR}
 echo "${INFO_PROMPT} Current directory is ${DOCKERFILE_DIR}"
 echo
-echo "${INFO_PROMPT} Running Docker build..."
+echo "${INFO_PROMPT} Running Docker build... (this may take a few minutes)"
 echo
-docker build --build-arg UBUNTU_IMAGE --build-arg UBUNTU_PYTHON_PACKAGE -t ${A6I_BUILD_SERVER} . 1>> ${SETUP_INFRA_LOG} 2>/tmp/error
+docker build    --build-arg UBUNTU_IMAGE \
+                --build-arg ANACONDA_VERSION \
+                --build-arg ANACONDA_SHA \
+                -t ${A6I_CONDABUILD_SERVER} . 1>> ${SETUP_INFRA_LOG} 2>/tmp/error
 abort_on_error
 
 # Compute how long we took in this script
 duration=$SECONDS
 echo
-echo "${INFO_PROMPT} ---------------- Completed creating image for build server in $duration sec"
+echo "${INFO_PROMPT} ---------------- Completed creating image for condabuild server in $duration sec"
 echo
 
 
