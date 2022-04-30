@@ -27,7 +27,7 @@ export UBUNTU_PYTHON_PACKAGE="python3.9"
 
 # Release version that is to be built
 export APODEIXI_GIT_BRANCH="dev"
-export APODEIXI_VERSION="0.9.8"
+export APODEIXI_VERSION="dev"
 
 # The build container will not be able to reference the git repo we want to build, since the container won't
 # have access to what, from its perspective, is a remote machine containing the repo.

@@ -9,16 +9,10 @@
 #       to start an initial `apodeixi_config.toml` is needed, which is expected to be already provisioned
 #       in the test database, and is injected into the Apodeixi container via a mount.
 #
-# To run this script, change directory to the location of this script and do something like this from a command tool
-#
-#               bash request_testrun.sh
-#
 # As a precondition, the Docker daemon must be running. To start it in WSL2 Ubuntu, do someting like:
 #
 #               sudo service docker start
 #
-
-# Apodeixi environment settings
 
 export A6I_DEVOPS_ROOT="$( cd "$( dirname $0 )/../../../" >/dev/null 2>&1 && pwd )"
 export PIPELINE_SCRIPTS="${A6I_DEVOPS_ROOT}/src"
@@ -26,15 +20,10 @@ export PIPELINE_SCRIPTS="${A6I_DEVOPS_ROOT}/src"
 source ${PIPELINE_SCRIPTS}/util/common.sh
 
 echo
-echo "${INFO_PROMPT} ---------------- Starting testrun step"
+echo "${INFO_PROMPT} ---------------- Starting Linux test step"
 echo
 # Initialize Bash's `SECONDS` timer so that at the end we can compute how long this sript took
 SECONDS=0
-
-#export LOCAL_TEST_DB="/mnt/c/Users/aleja/Documents/Code/chateauclaudia-labs/apodeixi/test_db"
-#export LOCAL_TEST_DB_IN_WINDOWS="C:/Users/aleja/Documents/Code/chateauclaudia-labs/apodeixi"
-#export SED_DELIM="#" # Must be a character *not present* in the ROOT_FOLDER, so that SED can use later in this script
-
 
 # We expect the test database to alreay have an `apodeixi_config.toml` file geared to development-time testing.
 # That means that the paths referenced in that `apodeixi_config.toml` file are expected to include hard-coded
@@ -73,83 +62,55 @@ SECONDS=0
 #             where the container-run test harness will expect it (since that's the value of $INJECTED_CONFIG_DIRECTORY)
 #
 
-#export TMP_CONFIG_DIRECTORY=${ROOT_FOLDER}/${TEST_DB}/tmp
-
-#cp ${ROOT_FOLDER}/${TEST_DB}/apodeixi_config.toml ${TMP_CONFIG_DIRECTORY}
-
-# GOTCHA: use double quotes as parameter to sed, not single quotes, so that the environment variables get interpolated
-#       as explained in https://stackoverflow.com/questions/6697753/difference-between-single-and-double-quotes-in-bash
-#sed -i "s${SED_DELIM}${LOCAL_TEST_DB_IN_WINDOWS}${SED_DELIM}/home/apodeixi-testdb${SED_DELIM}g" ${TMP_CONFIG_DIRECTORY}/apodeixi_config.toml
-
-echo "${INFO_PROMPT} About to start Apodeixi test container..."
+echo "${INFO_PROMPT} About to start Linux test container..."
 
 # Comment this environment variable if we want to keep the test container (e.g., to inspect problems) after this script ends
 export REMOVE_CONTAINER_WHEN_DONE=1
-
-echo "${INFO_PROMPT} ... Determining approach for how container can access the GIT testdb repo:"
-if [ ! -z ${MOUNT_APODEIXI_GIT_PROJECT} ]
-    then
-        echo "${INFO_PROMPT}        = by mounting this drive:"
-        echo "${INFO_PROMPT}        => ${APODEIXI_TESTDB_GIT_URL}"
-        if [ ! -d ${APODEIXI_TESTDB_GIT_URL} ]
-            then
-                echo "${ERR_PROMPT} Directory doesn't exist, so can't mount it:"
-                echo "      ${APODEIXI_TESTDB_GIT_URL}"
-                echo
-                echo echo "${ERR_PROMPT} Aborting testrun..."
-                exit 1
-        fi
-        export APODEIXI_TESTDB_URL_CLONED_BY_CONTAINER="/home/apodeixi-testdb"
-        export GIT_REPO_MOUNT_DOCKER_OPTION="-v ${APODEIXI_TESTDB_GIT_URL}:${APODEIXI_TESTDB_URL_CLONED_BY_CONTAINER}"
-    else
-        echo "${INFO_PROMPT}        => from this URL:"
-        echo "${INFO_PROMPT}        => ${APODEIXI_TESTDB_GIT_URL}"
-        export APODEIXI_TESTDB_URL_CLONED_BY_CONTAINER="${APODEIXI_TESTDB_GIT_URL}"
-fi
 
 # Comments on these options to starting the container:
 #   - $APODEIXI_CONFIG_DIRECTORY environment varialbe is not needed for tests, but saves setup if we have to 
 #       debug within the container
 #
-docker run  -e TIMESTAMP=${TIMESTAMP} -e APODEIXI_GIT_BRANCH=${APODEIXI_GIT_BRANCH} \
-            -e APODEIXI_TESTDB_GIT_URL=${APODEIXI_TESTDB_URL_CLONED_BY_CONTAINER} \
+docker run  -e TIMESTAMP=${TIMESTAMP} \
+            -e APODEIXI_VERSION=${APODEIXI_VERSION} -e APODEIXI_GIT_BRANCH=${APODEIXI_GIT_BRANCH} \
+            -e APODEIXI_TESTDB_GIT_URL=${APODEIXI_TESTDB_GIT_URL} \
             -e INJECTED_CONFIG_DIRECTORY=/home/apodeixi_testdb_config \
             -e APODEIXI_CONFIG_DIRECTORY=/home/apodeixi_testdb_config \
-            -e UBUNTU_PYTHON_PACKAGE=${UBUNTU_PYTHON_PACKAGE} \
-            --hostname "APO-TESTRUNNER-${TIMESTAMP}" \
-            -v ${PIPELINE_STEP_OUTPUT}:/home/output -v ${PIPELINE_SCRIPTS}/docker_flow/pipeline_steps:/home/scripts \
+            --hostname "APO-LINUX-TEST-${TIMESTAMP}" \
+            -v ${PIPELINE_STEP_OUTPUT}:/home/output \
+            -v ${PIPELINE_SCRIPTS}/conda_flow/pipeline_steps:/home/scripts \
             -v $TEST_APODEIXI_CONFIG_DIRECTORY:/home/apodeixi_testdb_config \
-            ${GIT_REPO_MOUNT_DOCKER_OPTION} \
-            ${APODEIXI_IMAGE} & 2>/tmp/error # run in the background so rest of this script can proceed
+            ${A6I_CONDABUILD_SERVER} & 2>/tmp/error # run in the background so rest of this script can proceed
 abort_on_error
 
-echo "${INFO_PROMPT} ...waiting for Apodeixi test container to start..."
+echo "${INFO_PROMPT} ...waiting for Linux test container to start..."
 sleep 3
 
-export APODEIXI_CONTAINER=$(docker ps -q -l) 2>/tmp/error
+export LINUX_TEST_CONTAINER=$(docker ps -q -l) 2>/tmp/error
 abort_on_error
 
 echo
-echo "${INFO_PROMPT} Apodeixi test container ${APODEIXI_CONTAINER} up and running..."
+echo "${INFO_PROMPT} Linux test container ${LINUX_TEST_CONTAINER} up and running..."
 echo
-echo "${INFO_PROMPT} Attempting to run tests for Apodeixi branch ${APODEIXI_GIT_BRANCH} using container ${APODEIXI_CONTAINER}..."
+echo "${INFO_PROMPT} Attempting to run tests for Apodeixi branch ${APODEIXI_GIT_BRANCH} using container ${LINUX_TEST_CONTAINER}..."
 echo "${INFO_PROMPT}            (this might take a 1-2 minutes...)"
 
-docker exec ${APODEIXI_CONTAINER} /bin/bash /home/scripts/testrun.sh 2>/tmp/error
+docker exec ${LINUX_TEST_CONTAINER} /bin/bash /home/scripts/linux_test.sh 2>/tmp/error
 # We don't use the generic function ./common.sh::abort_on_error because we want to warn the user that a rogue container
 # was left running, so we manually write the code to catch and handle the exception
 if [[ $? != 0 ]]; then
     error=$(</tmp/error)
     echo "${ERR_PROMPT} ${error}"
     echo
-    echo "${ERR_PROMPT} Due to above error, cleanup wasn't done. Container ${APODEIXI_CONTAINER} needs to be manually stopped"
+    echo "${ERR_PROMPT} Due to above error, cleanup wasn't done. Container ${LINUX_TEST_CONTAINER} needs to be manually stopped"
     echo 
     echo "${ERR_PROMPT} For more detail on error, check logs under ${PIPELINE_STEP_OUTPUT}"
     unblock_bats
     exit 1
 fi
+
 echo
-echo "${INFO_PROMPT} Testrun was successful"
+echo "${INFO_PROMPT} Linux conda install & test was successful"
 
 # GOTCHA - IF TESTING WITH BATS, WE MUST STOP THE CONTAINER TO PREVENT BATS FROM HANGING.
 #       There are other mechanisms in the Bats documentation to avoid hanging (basically, to close file descriptor 3)
@@ -158,14 +119,14 @@ echo "${INFO_PROMPT} Testrun was successful"
 if [ ! -z ${REMOVE_CONTAINER_WHEN_DONE} ] || [ ! -z ${RUNNING_BATS} ]
     then
         echo "${INFO_PROMPT} ...stopping test container..."
-        echo "${INFO_PROMPT} ...stopped test container $(docker stop ${APODEIXI_CONTAINER})"
-        echo "${INFO_PROMPT} ...removed test container $(docker rm ${APODEIXI_CONTAINER})"
+        echo "${INFO_PROMPT} ...stopped test container $(docker stop ${LINUX_TEST_CONTAINER})"
+        echo "${INFO_PROMPT} ...removed test container $(docker rm ${LINUX_TEST_CONTAINER})"
         echo
 fi
 
 # Compute how long we took in this script
 duration=$SECONDS
 echo
-echo "${INFO_PROMPT} ---------------- Completed testrun step in $duration sec"
+echo "${INFO_PROMPT} ---------------- Completed Linux test step in $duration sec"
 echo
 echo "${INFO_PROMPT} Check logs and distribution under ${PIPELINE_STEP_OUTPUT}"

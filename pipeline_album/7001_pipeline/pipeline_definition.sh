@@ -22,7 +22,7 @@ export PYTHON_VERSION="3.9"
 export UBUNTU_PYTHON_PACKAGE="python3.9"
 
 # Release version that is to be built
-export APODEIXI_VERSION="0.9.8"
+export APODEIXI_VERSION="0.9.9"
 export APODEIXI_GIT_BRANCH="v${APODEIXI_VERSION}"
 export CONDA_RECIPE="apodeixi_${APODEIXI_VERSION}_recipe"
 

@@ -12,17 +12,18 @@ abort_pipeline_step_on_error
 T1=$SECONDS
 echo "${INFO_PROMPT} ... completed build step in $(($T1 - $T0)) sec"
 
-echo "${INFO_PROMPT} Running install-and-test step..."
-${A6I_DEVOPS_ROOT}/src/conda_flow/pipeline_steps/request_install_and_test.sh ${PIPELINE_ID} &>> ${PIPELINE_LOG}
+echo "${INFO_PROMPT} Running Linux test step ..."
+${A6I_DEVOPS_ROOT}/src/conda_flow/pipeline_steps/request_linux_test.sh ${PIPELINE_ID} &>> ${PIPELINE_LOG}
 abort_pipeline_step_on_error
 T2=$SECONDS
-echo "${INFO_PROMPT} ... completed install-and-test step in $(($T2 - $T1)) sec"
+echo "${INFO_PROMPT} ... completed Linux install-and-test step in $(($T2 - $T1)) sec"
 
-echo "${INFO_PROMPT} Running convert-distributions step..."
-${A6I_DEVOPS_ROOT}/src/conda_flow/pipeline_steps/request_convert_distributions.sh ${PIPELINE_ID} &>> ${PIPELINE_LOG}
+echo "${INFO_PROMPT} Running Windows test step ..."
+${A6I_DEVOPS_ROOT}/src/conda_flow/pipeline_steps/request_windows_test.sh ${PIPELINE_ID} &>> ${PIPELINE_LOG}
 abort_pipeline_step_on_error
-T3=$SECONDS
-echo "${INFO_PROMPT} ... completed convert-distribution step in $(($T3 - $T2)) sec"
+T2=$SECONDS
+echo "${INFO_PROMPT} ... completed Windows install-and-test step in $(($T2 - $T1)) sec"
+
 
 echo "${INFO_PROMPT} Running upload-to-Anaconda step..."
 ${A6I_DEVOPS_ROOT}/src/conda_flow/pipeline_steps/request_anaconda_upload.sh ${PIPELINE_ID} &>> ${PIPELINE_LOG}

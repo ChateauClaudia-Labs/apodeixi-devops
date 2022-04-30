@@ -20,6 +20,16 @@ abort_on_error() {
     fi
 }
 
+unblock_bats() {
+    if [ ! -z ${RUNNING_BATS} ]
+        then
+            echo "${INFO_PROMPT} ...stopping test container..."
+            echo "${INFO_PROMPT} ...stopped test container $(docker stop ${APODEIXI_CONTAINER})"
+            echo "${INFO_PROMPT} ...removed test container $(docker rm ${APODEIXI_CONTAINER})"
+            echo
+    fi    
+}
+
 # Unique timestamp used e.g., as a prefix in the names of log files
 # For example, "220331.120319" is a run done at 12:03 pm (and 19 seconds) on March 31, 2022
 export TIMESTAMP="$(date +"%y%m%d.%H%M%S")"

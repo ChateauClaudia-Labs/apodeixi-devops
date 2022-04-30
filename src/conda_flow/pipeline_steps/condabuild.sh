@@ -60,6 +60,9 @@ if [[ $? != 0 ]]; then
     exit 1
 fi
 
+# The linux-64 was not converted, so copy it manually
+cp -r /home/anaconda3/conda-bld/linux-64 /home/output/dist/
+
 echo &>> ${CONDA_BUILD_LOG}
 echo "[A6I_CONDA_BUILD_SERVER] Created these distributions:" &>> ${CONDA_BUILD_LOG}
 echo &>> ${CONDA_BUILD_LOG}
