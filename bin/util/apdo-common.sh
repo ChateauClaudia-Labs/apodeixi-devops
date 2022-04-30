@@ -72,7 +72,8 @@ cli_pipeline_run_exists() {
 abort_pipeline_step_on_error() {
     if [[ $? != 0 ]]; then
       echo
-      echo "${ERROR_PROMPT} Pipeline aborted"
+      echo "${ERROR_PROMPT} Pipeline aborted."
+      echo "${ERROR_PROMPT} See error logs at ${PIPELINE_LOG}"
       echo
       exit 1
     fi
