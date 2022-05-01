@@ -5,24 +5,31 @@
 #       2. Invoke them via their full path
 #       3. To ensure environment variables referenced here are set, the caller should have invoked this script using 'source'
 #
-echo "${INFO_PROMPT} Running build step..."
+echo "${INFO_PROMPT} Running Linux conda build step..."
 T0=$SECONDS
-${A6I_DEVOPS_ROOT}/src/conda_flow/pipeline_steps/request_condabuild.sh ${PIPELINE_ID} &>> ${PIPELINE_LOG}
+${A6I_DEVOPS_ROOT}/src/conda_flow/pipeline_steps/request_linux_condabuild.sh ${PIPELINE_ID} &>> ${PIPELINE_LOG}
 abort_pipeline_step_on_error
 T1=$SECONDS
-echo "${INFO_PROMPT} ... completed build step in $(($T1 - $T0)) sec"
+echo "${INFO_PROMPT} ... completed Linux conda build step in $(($T1 - $T0)) sec"
 
 echo "${INFO_PROMPT} Running Linux test step ..."
 ${A6I_DEVOPS_ROOT}/src/conda_flow/pipeline_steps/request_linux_test.sh ${PIPELINE_ID} &>> ${PIPELINE_LOG}
 abort_pipeline_step_on_error
 T2=$SECONDS
-echo "${INFO_PROMPT} ... completed Linux install-and-test step in $(($T2 - $T1)) sec"
+echo "${INFO_PROMPT} ... completed Linux test step in $(($T2 - $T1)) sec"
+
+echo "${INFO_PROMPT} Running Windows conda build step..."
+T0=$SECONDS
+${A6I_DEVOPS_ROOT}/src/conda_flow/pipeline_steps/request_windows_condabuild.sh ${PIPELINE_ID} &>> ${PIPELINE_LOG}
+abort_pipeline_step_on_error
+T1=$SECONDS
+echo "${INFO_PROMPT} ... completed Windows conda build step in $(($T1 - $T0)) sec"
 
 echo "${INFO_PROMPT} Running Windows test step ..."
 ${A6I_DEVOPS_ROOT}/src/conda_flow/pipeline_steps/request_windows_test.sh ${PIPELINE_ID} &>> ${PIPELINE_LOG}
 abort_pipeline_step_on_error
 T2=$SECONDS
-echo "${INFO_PROMPT} ... completed Windows install-and-test step in $(($T2 - $T1)) sec"
+echo "${INFO_PROMPT} ... completed Windows test step in $(($T2 - $T1)) sec"
 
 
 echo "${INFO_PROMPT} Running upload-to-Anaconda step..."

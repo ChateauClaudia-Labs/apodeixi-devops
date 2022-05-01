@@ -22,13 +22,21 @@ export PYTHON_VERSION="3.9"
 export UBUNTU_PYTHON_PACKAGE="python3.9"
 
 # Release version that is to be built
-export APODEIXI_VERSION="0.9.9"
+export APODEIXI_VERSION="0.9.10"
 export APODEIXI_GIT_BRANCH="v${APODEIXI_VERSION}"
 export CONDA_RECIPE="apodeixi_${APODEIXI_VERSION}_recipe"
 
-export APODEIXI_GIT_URL="https://github.com/ChateauClaudia-Labs/apodeixi.git"
+#export APODEIXI_GIT_URL="https://github.com/ChateauClaudia-Labs/apodeixi.git"
 
 export APODEIXI_TESTDB_GIT_URL="https://github.com/ChateauClaudia-Labs/apodeixi-testdb.git"
+
+# For the Windows tests, we don't have a Windows container capability, so instead we will run a bash script in
+# the Windows host. Here are some variables for assets in that Windows host
+#
+WIN_ANACONDA_DIR="/c/Users/aleja/Documents/CodeImages/Technos/Anaconda3"
+
+# This is the command that WSL will execute - it must be a Linux path, but it is for a Windows executable
+WIN_BASH_EXE="/mnt/c/Users/aleja/Documents/CodeImages/Technos/Git/bin/bash.exe"
 
 # Define which server image to use for the build. Determines version of Ubuntu and Python for the container where the build runs
 export A6I_CONDABUILD_SERVER="a6i-condabuild-server"
@@ -36,7 +44,7 @@ export A6I_CONDABUILD_SERVER="a6i-condabuild-server"
 # Defines the name (& tag) for the Apodeixi image to be created by the pipeline. If there is no tag, Docker will
 # by default put a tag of ":latest"
 #
-APODEIXI_IMAGE="apodeixi"
+#APODEIXI_IMAGE="apodeixi"
 
 export APODEIXI_CONFIG_DIRECTORY=${PIPELINE_ALBUM}/${PIPELINE_NAME}
 

@@ -27,6 +27,7 @@ echo "${INFO_PROMPT} About to start condabuild server container..."
 docker run ${REMOVE_CONTAINER_WHEN_DONE} \
             --hostname "APO-CONDABUILDER-${TIMESTAMP}" \
             -e TIMESTAMP=${TIMESTAMP} -e APODEIXI_VERSION=${APODEIXI_VERSION} \
+            -e HOST_CONDA_RECIPE_DIR=${CONDA_RECIPE_DIR} \
             -v ${PIPELINE_STEP_OUTPUT}:/home/output \
             -v ${PIPELINE_SCRIPTS}/conda_flow/pipeline_steps:/home/scripts \
             -v ${CONDA_RECIPE_DIR}:/home/conda_build_recipe \
@@ -42,17 +43,10 @@ abort_on_error
 echo "${INFO_PROMPT} Conda build server container ${CONDABUILD_CONTAINER} up and running..."
 echo "${INFO_PROMPT} ...attempting to build Apodeixi branch ${APODEIXI_GIT_BRANCH}..."
 
-echo "${INFO_PROMPT} ...building Apodeixi using container ${CONDABUILD_CONTAINER}... (this will take a few minutes)"
+echo "${INFO_PROMPT} ...building Apodeixi using container ${CONDABUILD_CONTAINER}... (this will take a 4-5 minutes)"
 echo
 
-#command="/home/anaconda3/bin/conda-build /home/conda_build_recipe"
-#echo "${INFO_PROMPT} Running the following command in the container:"
-#echo
-#echo "${INFO_PROMPT}           $command       "
-#echo
-#echo "${INFO_PROMPT}    (...this may take a few minutes)"
-#docker exec ${CONDABUILD_CONTAINER} $command        &>> ${CONDABUILD_LOG} 2>/tmp/error
-docker exec ${CONDABUILD_CONTAINER} /bin/bash /home/scripts/condabuild.sh 2>/tmp/error
+docker exec ${CONDABUILD_CONTAINER} /bin/bash /home/scripts/linux_condabuild.sh 2>/tmp/error
 # We don't use the generic function ./common.sh::abort_on_error because we want to warn the user that a rogue container
 # was left running, so we manually write the code to catch and handle the exception
 if [[ $? != 0 ]]; then

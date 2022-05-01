@@ -93,7 +93,7 @@ echo
 echo "${INFO_PROMPT} Linux test container ${LINUX_TEST_CONTAINER} up and running..."
 echo
 echo "${INFO_PROMPT} Attempting to run tests for Apodeixi branch ${APODEIXI_GIT_BRANCH} using container ${LINUX_TEST_CONTAINER}..."
-echo "${INFO_PROMPT}            (this might take a 1-2 minutes...)"
+echo "${INFO_PROMPT}            (this might take a 3-4 minutes...)"
 
 docker exec ${LINUX_TEST_CONTAINER} /bin/bash /home/scripts/linux_test.sh 2>/tmp/error
 # We don't use the generic function ./common.sh::abort_on_error because we want to warn the user that a rogue container
