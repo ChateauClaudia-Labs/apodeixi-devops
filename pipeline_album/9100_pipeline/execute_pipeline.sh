@@ -1,3 +1,7 @@
+#!/usr/bin/env bash
+
+source ${CCL_DEVOPS_CONFIG_PIPELINE_ALBUM}/epoch_commons.sh
+
 #
 # GOTCHA: Invoke pipeline steps so that $0 is set to their full path, since each step assumes
 #       $0 refers to that pipeline step's script. This means that:
@@ -7,9 +11,7 @@
 #
 echo "${INFO_PROMPT} Running create_build_server step..."
 T0=$SECONDS
-${A6I_DEVOPS_ROOT}/src/docker_flow/infrastructure/create_build_server.sh ${PIPELINE_ID} &>> ${PIPELINE_LOG}
+${CCL_DEVOPS_SERVICE_ROOT}/src/docker_flow/infrastructure/create_build_server.sh ${PIPELINE_ID} &>> ${PIPELINE_LOG}
 abort_pipeline_step_on_error
 T1=$SECONDS
 echo "${INFO_PROMPT} ... completed create_build_server step in $(($T1 - $T0)) sec"
-
-
