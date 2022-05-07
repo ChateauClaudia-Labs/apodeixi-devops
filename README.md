@@ -26,6 +26,12 @@ need to set up the following submodules for the functionality of apodeixi-devops
 `git submodule add https://github.com/bats-core/bats-assert.git test/test_helper/bats-assert`
 `git submodule add https://github.com/bats-core/bats-file.git test/test_helper/bats-file`
 
+From time to time these submodules should updated, by doing 
+
+`git submodule update --remote` in the local folder for the submodules.
+
+See https://git-scm.com/book/en/v2/Git-Tools-Submodules for more details on how to admnister GIT submodules.
+
 # Running the CI/CD pipeline for Apodeixi
 
 Docker must be running. If you are using a WSL environment, you can start the Docker daemon like this:

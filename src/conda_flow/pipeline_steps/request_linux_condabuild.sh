@@ -12,7 +12,7 @@ export REMOVE_CONTAINER_WHEN_DONE="--rm"
 # Run build in build container
 #
 echo
-echo "${INFO_PROMPT} ---------------- Starting conda build step"
+echo "${INFO_PROMPT} ---------------- Starting Linux conda build step"
 echo
 echo "${INFO_PROMPT} CONDA_RECIPE               =   ${CONDA_RECIPE}"
 echo "${INFO_PROMPT} A6I_CONDABUILD_SERVER      =   ${A6I_CONDABUILD_SERVER}"
@@ -66,6 +66,6 @@ echo
 
 # Compute how long we took in this script
 duration=$SECONDS
-echo "${INFO_PROMPT} ---------------- Completed conda build step in $duration sec"
+echo "${INFO_PROMPT} ---------------- Completed Linux conda build step in $duration sec"
 echo
 echo "${INFO_PROMPT} Check logs and distribution under ${PIPELINE_STEP_OUTPUT}"

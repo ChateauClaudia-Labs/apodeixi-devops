@@ -8,13 +8,14 @@ pipeline_description() {
     Flow type:                          Conda flow
     Apodexi version built:              v${APODEIXI_VERSION}
     Packaged as:                        Conda package 'apodeixi', ${APODEIXI_GIT_BRANCH}
-    Deployed to:                        Conda channel https://anaconda.org/alejandro-ccl/repo
+    Platforms:                          win-64, linux-64 packages are created.
+    Deployed to:                        Distributions left in pipeline's output. Manually login to Anaconda to upload to channel https://anaconda.org/alejandro-ccl/repo
     "
 }
 
 # Single-line description suitable for use when listing multiple pipelines
 pipeline_short_description() {
-    echo "Deploys Apodeixi v${APODEIXI_VERSION} as a Conda package in channel https://anaconda.org/alejandro-ccl/repo"
+    echo "Creates Linux and Windowx distributions Apodeixi v${APODEIXI_VERSION} suitable to upload to https://anaconda.org/alejandro-ccl/repo"
 }
 
 export UBUNTU_IMAGE="ubuntu:20.04"
@@ -22,7 +23,13 @@ export PYTHON_VERSION="3.9"
 export UBUNTU_PYTHON_PACKAGE="python3.9"
 
 # Release version that is to be built
+#   GOTCHA:
+#       If you change it, you must change version in **multiple** places:
+#       -In pipeline definition (this file)
+#       -In name of Conda recipe folder under src/conda_flow/conda_recipes
+#       -In the meta.yaml file inside the Conda recipe folder
 export APODEIXI_VERSION="0.9.10"
+
 export APODEIXI_GIT_BRANCH="v${APODEIXI_VERSION}"
 export CONDA_RECIPE="apodeixi_${APODEIXI_VERSION}_recipe"
 

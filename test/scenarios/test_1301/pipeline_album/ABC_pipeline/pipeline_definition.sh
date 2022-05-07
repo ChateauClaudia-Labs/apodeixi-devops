@@ -48,4 +48,10 @@ APODEIXI_IMAGE="apodeixi:test_1101"
 
 #export APODEIXI_CONFIG_DIRECTORY=${PIPELINE_STEP_INTAKE}/${ENVIRONMENT}
 
+# This is needed to tell the deployment stage to stop Docker, since when using Bats to test code that starts
+# containers Bats will hang until the Docker container is stopped.
+#   For real production deployment, the pipeline_definition should never set this variable
+#
+export RUNNING_BATS=1
+
 export TEST_APODEIXI_CONFIG_DIRECTORY=${PIPELINE_ALBUM}/${PIPELINE_NAME}/apodeixi_testdb_config

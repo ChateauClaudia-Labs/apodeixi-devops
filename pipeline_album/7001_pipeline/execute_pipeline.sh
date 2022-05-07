@@ -31,10 +31,13 @@ abort_pipeline_step_on_error
 T2=$SECONDS
 echo "${INFO_PROMPT} ... completed Windows test step in $(($T2 - $T1)) sec"
 
-
-echo "${INFO_PROMPT} Running upload-to-Anaconda step..."
-${A6I_DEVOPS_ROOT}/src/conda_flow/pipeline_steps/request_anaconda_upload.sh ${PIPELINE_ID} &>> ${PIPELINE_LOG}
-abort_pipeline_step_on_error
-T4=$SECONDS
-echo "${INFO_PROMPT} ... completed upload-to-Anaconda step in $(($T4 - $T3)) sec"
+# For now we don't support automatic uploading to anaconda. That must be done manually.
+#   To support it, something will have to be troubleshooted around Anaconda login authentication, since that
+#   fails in Bash
+#
+#echo "${INFO_PROMPT} Running upload-to-Anaconda step..."
+#${A6I_DEVOPS_ROOT}/src/conda_flow/pipeline_steps/request_anaconda_upload.sh ${PIPELINE_ID} &>> ${PIPELINE_LOG}
+#abort_pipeline_step_on_error
+#T4=$SECONDS
+#echo "${INFO_PROMPT} ... completed upload-to-Anaconda step in $(($T4 - $T3)) sec"
 
