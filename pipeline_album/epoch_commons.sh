@@ -33,6 +33,8 @@ export _CFG__DEPLOYABLE_GIT_URL="https://github.com/ChateauClaudia-Labs/apodeixi
 
 export _CFG__TESTDB_GIT_URL="https://github.com/ChateauClaudia-Labs/apodeixi-testdb.git"
 
+export _CFG__TESTDB_REPO_NAME="apodeixi-testdb"
+
 # If we call <A6I_ROOT> the folder where Apodeixi repos exist, then we know that:
 #
 #   * The environment is usually <A6I_ROOT>/${ENVIRONMENT}. Example: <A6I_ROOT>/UAT_ENV
@@ -217,12 +219,116 @@ _CFG__set_linux_test_conda_options() {
 #   $1: Name of script that would run in a Windows conda virtual environment to run tests
 _CFG__apply_windows_test_conda_options() {
 
-    WIN_INJECTED_CONFIG_DIRECTORY=$(to_windows_path ${TEST_APODEIXI_CONFIG_DIRECTORY})
- 
-    echo
-    echo "      export WIN_INJECTED_CONFIG_DIRECTORY=$(echo $WIN_INJECTED_CONFIG_DIRECTORY)"
-    sed -i "1s#^#export WIN_INJECTED_CONFIG_DIRECTORY=$(echo $WIN_INJECTED_CONFIG_DIRECTORY)\n#" $1
-    abort_on_error
+    # This function is being called in WSL, and we must make sure that some things are set up for when script $1
+    # later runs in Windows and runs Apodeixi tests. This is what we must ensure:
+    #   1. the variable $INJECTED_CONFIG_DIRECTORY is set in the script $1
+    #   2. Ensure $INJECTED_CONFIG_DIRECTORY points to a valid directory
+    #   3. that directory contains a file called apodeixi_config.toml which is "based" on the file
+    #      $TEST_APODEIXI_CONFIG_DIRECTORY/apodeixi_config.toml but differs from it a per the next point
+    #   4. Paths like "home/work" in $TEST_APODEIXI_CONFIG_DIRECTORY/apodeixi_config.toml are replaced by
+    #      paths like "$WIN_TESTDB_REPO_DIR/${WIN_TESTDB_REPO_NAME".
+    #
+    # APPROACH: we create a temporary file in WSL,
+    #
+    #                        /tmp/_CFG__apply_windows_test_conda_options.txt
+    #
+    # This file will have all the Windows commands & Windows paths (i.e, like script $1, so not WSL!)
+    # Once we have built this file, we inject its content in script $1 using sed
+    
 
+    # Step 1: Ensure $INJECTED_CONFIG_DIRECTORY is set and points to a valid directory
+    #
+    echo "export INJECTED_CONFIG_DIRECTORY=$(echo ${WIN_WORKING_DIR}/apodeixi_testdb_config)" \
+            > /tmp/_CFG__apply_windows_test_conda_options.txt
+
+    # Step 2: Ensure $INJECTED_CONFIG_DIRECTORY points to a valid directory
+    #       GOTCHA: 
+    #               $INJECTED_CONFIG_DIRECTORY is a string with Window paths ("C:/...") since it is meant to
+    #           retrieved by Apodeixi running on Windows.
+    #           But if we are going to create such directory if it doesn't already, we must go back to the
+    #           WSL paths ("/mtn/c/...") since this function is running in WSL.
+    #           For this we leverage the identity
+    #           
+    #                   IN_WORKING_DIR=$(to_windows_path ${WORKING_DIR})
+    #
+    export WSL_INJECTED_CONFIG_DIRECTORY="${WORKING_DIR}/apodeixi_testdb_config"
+    if [ ! -d $WSL_INJECTED_CONFIG_DIRECTORY ]
+        then
+            mkdir $WSL_INJECTED_CONFIG_DIRECTORY
+    fi
+
+    # Step 3: put instructions in script $1 to copy the file $TEST_APODEIXI_CONFIG_DIRECTORY/apodeixi_config.toml 
+    #       to "$WIN_TESTDB_REPO_DIR/${WIN_TESTDB_REPO_NAME"
+    #
+    #       GOTCHA: 
+    #           $TEST_APODEIXI_CONFIG_DIRECTORY/apodeixi_config.toml is a WSL path, so we have to:
+    #           a. Put an instruction to set Windows environment variable  $WIN_INJECTED_CONFIG_DIRECTORY in
+    #               script $1 for the equivalent Windows path
+    #           b. Use single quotes in the copy instruction so that the variable $WIN_INJECTED_CONFIG_DIRECTORY is not
+    #               interpolated in WSL
+    #           c. Should the copy instruction fail when it is executed later on in Windows, inject into script $1
+    #               a call to the Windows script's function `abort_testrun_on_error`
+    #
+    echo "export WIN_INJECTED_CONFIG_DIRECTORY=$(to_windows_path ${TEST_APODEIXI_CONFIG_DIRECTORY})" \
+            >> /tmp/_CFG__apply_windows_test_conda_options.txt
+
+    echo 'cp ${WIN_INJECTED_CONFIG_DIRECTORY}/apodeixi_config.toml ${INJECTED_CONFIG_DIRECTORY}/' \
+            >> /tmp/_CFG__apply_windows_test_conda_options.txt
+
+    echo 'abort_testrun_on_error' \
+            >> /tmp/_CFG__apply_windows_test_conda_options.txt
+
+    # Step 4
+    #           We know that this identity will hold true in the Windows script $1 by the time that the script $1
+    #   clones the test database repo:
+    #
+    #           TESTDB_REPO_PARENT_DIR="$(cd ~/tmp && pwd)/test_${WIN_TIMESTAMP}"
+    #   
+    #   Thus, we need apodeixi_config.toml to reference paths which in Windows are equal to $TESTDB_REPO_PARENT_DIR
+    #   Since the file we copied references path in '/home/work', we need to:
+    #
+    #   a. Put an instruction in script $1 to set the value of variable TESTDB_REPO_PARENT_DIR
+    #   b. Put a sed instruction to replace '/home/work' by $TESTDB_REPO_PARENT_DIR. Being an instruction for execution
+    #       later on in Windows (not now, not in WSL), we must use single quotes to prevent Bash interpolation.
+    #       Since "/" is part of the text being replaced, we choose a different sed delimeter (we use "#" instead of the 
+    #       default delimeter "/")
+    #   c. Lastly, an additional sed instruction will be needed because in the script $1 the variable TESTDB_REPO_PARENT_DIR
+    #      is something like 
+    # 
+    #
+    #               /c/Users/aleja/tmp/test_220501.144650
+    #
+    #       but we need ${INJECTED_CONFIG_DIRECTORY}/apodeixi_config.toml to have paths like 
+    #
+    #               C:/Users/aleja/tmp/test_220501.144650
+    #
+    #       to prevent problems when loading the yaml file "/c/Users/aleja/tmp/test_220501.144650/apodeixi-testdb/test_config.yaml"
+    #       
+    #       So put an instruction for another we do another sed call, replacing "/c/" by "C:/"
+    #
+    echo 'export TESTDB_REPO_PARENT_DIR=$(cd ~/tmp && pwd)/test_${WIN_TIMESTAMP}' \
+             >> /tmp/_CFG__apply_windows_test_conda_options.txt   
+    echo 'sed -i "s#/home/work/#${TESTDB_REPO_PARENT_DIR}/#g" ${INJECTED_CONFIG_DIRECTORY}/apodeixi_config.toml' \
+             >> /tmp/_CFG__apply_windows_test_conda_options.txt   
+    echo 'abort_testrun_on_error' \
+             >> /tmp/_CFG__apply_windows_test_conda_options.txt   
+    echo 'sed -i "s#/c/#C:/#g" ${INJECTED_CONFIG_DIRECTORY}/apodeixi_config.toml' \
+             >> /tmp/_CFG__apply_windows_test_conda_options.txt   
+    echo 'abort_testrun_on_error' \
+             >> /tmp/_CFG__apply_windows_test_conda_options.txt
+
+    echo 'echo "[A6I_WIN_TEST_VIRTUAL_ENV] =========== Additional logic from Apodeixi: set up apodeixi config"   &>> ${TEST_LOG}' \
+            >> /tmp/_CFG__apply_windows_test_conda_options.txt
+    echo 'echo &>> ${TEST_LOG}' \
+            >> /tmp/_CFG__apply_windows_test_conda_options.txt
+
+    # Now insert the contents of /tmp/_CFG__apply_windows_test_conda_options.txt into script $1
+    # GOTCHA:
+    #       Use double quotes in "$x" so that line breaks are preserved. Else all lines get aggregated to a single line
+    # (would be a huge mess)
+    x=`cat /tmp/_CFG__apply_windows_test_conda_options.txt; cat $1`
+    echo "$x" > $1
+
+    abort_on_error
 }
 
