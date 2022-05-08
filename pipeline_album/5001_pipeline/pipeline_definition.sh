@@ -5,7 +5,7 @@ source ${_CFG__PIPELINE_ALBUM}/epoch_commons.sh
 # This variable holds a text description of what this pipeline does. This is needed by the discover_pipelines.sh
 # script to help DevOps operators discover which pipeline to use by interrogating pipelines on what their purpose is.
 # So this variable is required for all pipelines.
-pipeline_description() {
+_CFG__pipeline_description() {
     echo "
     Flow type:                          Docker flow
     Apodexi version built:              Alex's 'dev' branch in host CC-Labs-2
@@ -19,7 +19,7 @@ pipeline_description() {
 }
 
 # Single-line description suitable for use when listing multiple pipelines
-pipeline_short_description() {
+_CFG__pipeline_short_description() {
     echo "Deploys local Apodeixi dev branch as a Linux container to ${ENVIRONMENT} (for user Alex in host CC-Labs-2)"
 }
 
@@ -27,10 +27,11 @@ pipeline_short_description() {
 export _CFG__DEPLOYABLE_GIT_BRANCH="dev"
 export _CFG__DEPLOYABLE_VERSION="dev"
 
-# The build container will not be able to reference the git repo we want to build, since the container won't
-# have access to what, from its perspective, is a remote machine containing the repo.
-# So instead, by setting $MOUNT_APODEIXI_GIT_PROJECT, the pipeline will mount this remote directory
-# $APODEIXI_GIT_URL onto a folder inside the container
+
+# Inputs for function: epoch_commons.sh::_CFG__set_build_docker_options
+#
+# Purpose: function is called by CCL-DevOps to set _CFG__BUILD_DOCKER_OPTIONS
+#
 export MOUNT_APODEIXI_GIT_PROJECT=1
 export APODEIXI_GIT_URL="/mnt/c/Users/aleja/Documents/Code/chateauclaudia-labs/a6i_repos/apodeixi"
 export APODEIXI_TESTDB_GIT_URL="/mnt/c/Users/aleja/Documents/Code/chateauclaudia-labs/a6i_repos/apodeixi-testdb"
@@ -40,7 +41,9 @@ export APODEIXI_TESTDB_GIT_URL="/mnt/c/Users/aleja/Documents/Code/chateauclaudia
 #
 _CFG__DEPLOYABLE_IMAGE="apodeixi:dev"
 
-# Defines what Apodeixi environment is being mounted in the Apodeixi container by this pipeline
+# Inputs for function: epoch_commons.sh::_CFG__set_deployment_docker_options
+#
+# Purpose: function is called by CCL-DevOps to set _CFG__DEPLOYMENT_DOCKER_OPTIONS
 #
 export ENVIRONMENT="UAT_ENV"
 export SECRETS_FOLDER=${A6I_ROOT}/${ENVIRONMENT}/secrets

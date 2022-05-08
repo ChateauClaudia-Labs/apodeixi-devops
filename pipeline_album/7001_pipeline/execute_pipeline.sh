@@ -1,43 +1,17 @@
-#
-# GOTCHA: Invoke pipeline steps so that $0 is set to their full path, since each step assumes
-#       $0 refers to that pipeline step's script. This means that:
-#       1. Invoke the script directly, not by using the 'source' command
-#       2. Invoke them via their full path
-#       3. To ensure environment variables referenced here are set, the caller should have invoked this script using 'source'
-#
-echo "${INFO_PROMPT} Running Linux conda build step..."
-T0=$SECONDS
-${_SVC__ROOT}/src/conda_flow/pipeline_steps/request_linux_condabuild.sh ${PIPELINE_ID} &>> ${PIPELINE_LOG}
-abort_pipeline_step_on_error
-T1=$SECONDS
-echo "${INFO_PROMPT} ... completed Linux conda build step in $(($T1 - $T0)) sec"
+# This will define the execute_conda_flow_step function
+source ${_CFG__PIPELINE_ALBUM}/execution_commons.sh
 
-echo "${INFO_PROMPT} Running Linux test step ..."
-${_SVC__ROOT}/src/conda_flow/pipeline_steps/request_linux_test.sh ${PIPELINE_ID} &>> ${PIPELINE_LOG}
-abort_pipeline_step_on_error
-T2=$SECONDS
-echo "${INFO_PROMPT} ... completed Linux test step in $(($T2 - $T1)) sec"
+execute_conda_flow_step request_linux_condabuild.sh "Linux conda build step"
 
-echo "${INFO_PROMPT} Running Windows conda build step..."
-T0=$SECONDS
-${_SVC__ROOT}/src/conda_flow/pipeline_steps/request_windows_condabuild.sh ${PIPELINE_ID} &>> ${PIPELINE_LOG}
-abort_pipeline_step_on_error
-T1=$SECONDS
-echo "${INFO_PROMPT} ... completed Windows conda build step in $(($T1 - $T0)) sec"
+execute_conda_flow_step request_linux_test.sh "Linux test step"
 
-echo "${INFO_PROMPT} Running Windows test step ..."
-${_SVC__ROOT}/src/conda_flow/pipeline_steps/request_windows_test.sh ${PIPELINE_ID} &>> ${PIPELINE_LOG}
-abort_pipeline_step_on_error
-T2=$SECONDS
-echo "${INFO_PROMPT} ... completed Windows test step in $(($T2 - $T1)) sec"
+execute_conda_flow_step request_windows_condabuild.sh "Windows conda build step"
+
+execute_conda_flow_step request_windows_test.sh "Windows test step"
 
 # For now we don't support automatic uploading to anaconda. That must be done manually.
 #   To support it, something will have to be troubleshooted around Anaconda login authentication, since that
 #   fails in Bash
 #
-#echo "${INFO_PROMPT} Running upload-to-Anaconda step..."
-#${_SVC__ROOT}/src/conda_flow/pipeline_steps/request_anaconda_upload.sh ${PIPELINE_ID} &>> ${PIPELINE_LOG}
-#abort_pipeline_step_on_error
-#T4=$SECONDS
-#echo "${INFO_PROMPT} ... completed upload-to-Anaconda step in $(($T4 - $T3)) sec"
+#execute_conda_flow_step request_anaconda_upload.sh "pload-to-Anaconda step"
 

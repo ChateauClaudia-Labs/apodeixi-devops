@@ -9,9 +9,9 @@ source ${_CFG__PIPELINE_ALBUM}/epoch_commons.sh
 #       2. Invoke them via their full path
 #       3. To ensure environment variables referenced here are set, the caller should have invoked this script using 'source'
 #
-echo "${INFO_PROMPT} Running create_build_server step..."
+echo "${_SVC__INFO_PROMPT} Running create_build_server step..."
 T0=$SECONDS
 ${_SVC__ROOT}/src/docker_flow/infrastructure/create_build_server.sh ${PIPELINE_ID} &>> ${PIPELINE_LOG}
 abort_pipeline_step_on_error
 T1=$SECONDS
-echo "${INFO_PROMPT} ... completed create_build_server step in $(($T1 - $T0)) sec"
+echo "${_SVC__INFO_PROMPT} ... completed create_build_server step in $(($T1 - $T0)) sec"
