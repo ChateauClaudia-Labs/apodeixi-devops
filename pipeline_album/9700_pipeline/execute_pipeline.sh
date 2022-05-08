@@ -7,7 +7,7 @@
 #
 echo "${_SVC__INFO_PROMPT} Running create_condabuild_server step..."
 T0=$SECONDS
-${_SVC__ROOT}/src/conda_flow/infrastructure/create_condabuild_server.sh ${PIPELINE_ID} &>> ${PIPELINE_LOG}
+${_SVC__ROOT}/src/conda_flow/infrastructure/create_condabuild_server.sh ${_SVC__PIPELINE_ID} &>> ${_SVC__PIPELINE_LOG}
 abort_pipeline_step_on_error
 T1=$SECONDS
 echo "${_SVC__INFO_PROMPT} ... completed create_condabuild_server step in $(($T1 - $T0)) sec"

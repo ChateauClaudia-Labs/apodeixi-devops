@@ -33,8 +33,8 @@ export _CFG__DEPLOYABLE_VERSION="dev"
 # Purpose: function is called by CCL-DevOps to set _CFG__BUILD_DOCKER_OPTIONS
 #
 export MOUNT_APODEIXI_GIT_PROJECT=1
-export APODEIXI_GIT_URL="/mnt/c/Users/aleja/Documents/Code/chateauclaudia-labs/a6i_repos/apodeixi"
-export APODEIXI_TESTDB_GIT_URL="/mnt/c/Users/aleja/Documents/Code/chateauclaudia-labs/a6i_repos/apodeixi-testdb"
+export _CFG__DEPLOYABLE_GIT_URL="/mnt/c/Users/aleja/Documents/Code/chateauclaudia-labs/a6i_repos/apodeixi"
+export _CFG__TESTDB_GIT_URL="/mnt/c/Users/aleja/Documents/Code/chateauclaudia-labs/a6i_repos/apodeixi-testdb"
 
 # Defines the name (& tag) for the Apodeixi image to be created by the pipeline. If there is no tag, Docker will
 # by default put a tag of ":latest"

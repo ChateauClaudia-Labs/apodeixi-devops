@@ -15,7 +15,7 @@ execute_docker_flow_step() {
     #
     echo "${_SVC__INFO_PROMPT} Running $2..."
     T0=$SECONDS
-    ${_SVC__ROOT}/src/docker_flow/pipeline_steps/$1 ${PIPELINE_ID} &>> ${PIPELINE_LOG}
+    ${_SVC__ROOT}/src/docker_flow/pipeline_steps/$1 ${_SVC__PIPELINE_ID} &>> ${_SVC__PIPELINE_LOG}
     abort_pipeline_step_on_error
     T1=$SECONDS
     echo "${_SVC__INFO_PROMPT} ... completed $2 in $(($T1 - $T0)) sec"
@@ -35,7 +35,7 @@ execute_conda_flow_step() {
     #
     echo "${_SVC__INFO_PROMPT} Running $2..."
     T0=$SECONDS
-    ${_SVC__ROOT}/src/conda_flow/pipeline_steps/$1 ${PIPELINE_ID} &>> ${PIPELINE_LOG}
+    ${_SVC__ROOT}/src/conda_flow/pipeline_steps/$1 ${_SVC__PIPELINE_ID} &>> ${_SVC__PIPELINE_LOG}
     abort_pipeline_step_on_error
     T1=$SECONDS
     echo "${_SVC__INFO_PROMPT} ... completed $2 in $(($T1 - $T0)) sec"

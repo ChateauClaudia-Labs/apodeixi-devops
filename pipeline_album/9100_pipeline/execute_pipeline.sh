@@ -11,7 +11,7 @@ source ${_CFG__PIPELINE_ALBUM}/epoch_commons.sh
 #
 echo "${_SVC__INFO_PROMPT} Running create_build_server step..."
 T0=$SECONDS
-${_SVC__ROOT}/src/docker_flow/infrastructure/create_build_server.sh ${PIPELINE_ID} &>> ${PIPELINE_LOG}
+${_SVC__ROOT}/src/docker_flow/infrastructure/create_build_server.sh ${_SVC__PIPELINE_ID} &>> ${_SVC__PIPELINE_LOG}
 abort_pipeline_step_on_error
 T1=$SECONDS
 echo "${_SVC__INFO_PROMPT} ... completed create_build_server step in $(($T1 - $T0)) sec"
