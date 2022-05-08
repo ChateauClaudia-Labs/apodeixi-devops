@@ -30,6 +30,8 @@ WIN_ANACONDA_DIR="/c/Users/aleja/Documents/CodeImages/Technos/Anaconda3"
 # This is the command that WSL will execute - it must be a Linux path, but it is for a Windows executable
 WIN_BASH_EXE="/mnt/c/Users/aleja/Documents/CodeImages/Technos/Git/bin/bash.exe"
 
+export _CFG__DEPLOYABLE="apodeixi"
+
 export APODEIXI_GIT_URL="https://github.com/ChateauClaudia-Labs/apodeixi.git"
 
 export APODEIXI_TESTDB_GIT_URL="https://github.com/ChateauClaudia-Labs/apodeixi-testdb.git"
@@ -37,11 +39,11 @@ export APODEIXI_TESTDB_GIT_URL="https://github.com/ChateauClaudia-Labs/apodeixi-
 # If we call <A6I_ROOT> the folder where Apodeixi repos exist, then we know that:
 #
 #   * The environment is usually <A6I_ROOT>/${ENVIRONMENT}. Example: <A6I_ROOT>/UAT_ENV
-#   * ${CCL_DEVOPS_CONFIG_PIPELINE_ALBUM} points to <A6I_ROOT>/apodeixi-devops/pipeline_album
+#   * ${_CFG__PIPELINE_ALBUM} points to <A6I_ROOT>/apodeixi-devops/pipeline_album
 #   
 # This motivates how the following is set up
-A6I_ROOT=${CCL_DEVOPS_CONFIG_PIPELINE_ALBUM}/../../
+A6I_ROOT=${_CFG__PIPELINE_ALBUM}/../../
 
-export APODEIXI_CONFIG_DIRECTORY=${CCL_DEVOPS_CONFIG_PIPELINE_ALBUM}/${PIPELINE_NAME}
+export APODEIXI_CONFIG_DIRECTORY=${_CFG__PIPELINE_ALBUM}/${PIPELINE_NAME}
 
-export TEST_APODEIXI_CONFIG_DIRECTORY=${CCL_DEVOPS_CONFIG_PIPELINE_ALBUM}/${PIPELINE_NAME}/apodeixi_testdb_config
+export TEST_APODEIXI_CONFIG_DIRECTORY=${_CFG__PIPELINE_ALBUM}/${PIPELINE_NAME}/apodeixi_testdb_config

@@ -7,25 +7,25 @@
 #
 echo "${INFO_PROMPT} Running build step..."
 T0=$SECONDS
-${CCL_DEVOPS_SERVICE_ROOT}/src/docker_flow/pipeline_steps/request_build.sh ${PIPELINE_ID} &>> ${PIPELINE_LOG}
+${_SVC__ROOT}/src/docker_flow/pipeline_steps/request_build.sh ${PIPELINE_ID} &>> ${PIPELINE_LOG}
 abort_pipeline_step_on_error
 T1=$SECONDS
 echo "${INFO_PROMPT} ... completed build step in $(($T1 - $T0)) sec"
 
 echo "${INFO_PROMPT} Running provisioning step..."
-${CCL_DEVOPS_SERVICE_ROOT}/src/docker_flow/pipeline_steps/request_provisioning.sh ${PIPELINE_ID} &>> ${PIPELINE_LOG}
+${_SVC__ROOT}/src/docker_flow/pipeline_steps/request_provisioning.sh ${PIPELINE_ID} &>> ${PIPELINE_LOG}
 abort_pipeline_step_on_error
 T2=$SECONDS
 echo "${INFO_PROMPT} ... completed provisioning step in $(($T2 - $T1)) sec"
 
 echo "${INFO_PROMPT} Running testrun step..."
-${CCL_DEVOPS_SERVICE_ROOT}/src/docker_flow/pipeline_steps/request_testrun.sh ${PIPELINE_ID} &>> ${PIPELINE_LOG}
+${_SVC__ROOT}/src/docker_flow/pipeline_steps/request_testrun.sh ${PIPELINE_ID} &>> ${PIPELINE_LOG}
 abort_pipeline_step_on_error
 T3=$SECONDS
 echo "${INFO_PROMPT} ... completed testrun step in $(($T3 - $T2)) sec"
 
 echo "${INFO_PROMPT} Running deployment step..."
-${CCL_DEVOPS_SERVICE_ROOT}/src/docker_flow/pipeline_steps/request_deployment.sh ${PIPELINE_ID} &>> ${PIPELINE_LOG}
+${_SVC__ROOT}/src/docker_flow/pipeline_steps/request_deployment.sh ${PIPELINE_ID} &>> ${PIPELINE_LOG}
 abort_pipeline_step_on_error
 export APODEIXI_CONTAINER=$(docker ps -q -l)
 abort_pipeline_step_on_error

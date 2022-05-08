@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source ${CCL_DEVOPS_CONFIG_PIPELINE_ALBUM}/epoch_commons.sh
+source ${_CFG__PIPELINE_ALBUM}/epoch_commons.sh
 
 # This variable holds a text description of what this pipeline does. This is needed by the discover_pipelines.sh
 # script to help DevOps operators discover which pipeline to use by interrogating pipelines on what their purpose is.

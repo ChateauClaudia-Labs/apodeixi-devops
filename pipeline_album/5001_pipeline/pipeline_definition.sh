@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source ${CCL_DEVOPS_CONFIG_PIPELINE_ALBUM}/epoch_commons.sh
+source ${_CFG__PIPELINE_ALBUM}/epoch_commons.sh
 
 # This variable holds a text description of what this pipeline does. This is needed by the discover_pipelines.sh
 # script to help DevOps operators discover which pipeline to use by interrogating pipelines on what their purpose is.
@@ -24,8 +24,8 @@ pipeline_short_description() {
 }
 
 # Release version that is to be built
-export APODEIXI_GIT_BRANCH="dev"
-export APODEIXI_VERSION="dev"
+export _CFG__DEPLOYABLE_GIT_BRANCH="dev"
+export _CFG__DEPLOYABLE_VERSION="dev"
 
 # The build container will not be able to reference the git repo we want to build, since the container won't
 # have access to what, from its perspective, is a remote machine containing the repo.
@@ -38,7 +38,7 @@ export APODEIXI_TESTDB_GIT_URL="/mnt/c/Users/aleja/Documents/Code/chateauclaudia
 # Defines the name (& tag) for the Apodeixi image to be created by the pipeline. If there is no tag, Docker will
 # by default put a tag of ":latest"
 #
-APODEIXI_IMAGE="apodeixi:dev"
+_CFG__DEPLOYABLE_IMAGE="apodeixi:dev"
 
 # Defines what Apodeixi environment is being mounted in the Apodeixi container by this pipeline
 #
