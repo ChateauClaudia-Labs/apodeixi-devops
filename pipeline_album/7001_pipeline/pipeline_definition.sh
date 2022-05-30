@@ -26,7 +26,7 @@ _CFG__pipeline_short_description() {
 #       -In pipeline definition (this file)
 #       -In name of Conda recipe folder under src/conda_flow/conda_recipes
 #       -In the meta.yaml file inside the Conda recipe folder
-export _CFG__DEPLOYABLE_VERSION="0.9.10"
+export _CFG__DEPLOYABLE_VERSION="0.9.11"
 
 export _CFG__DEPLOYABLE_GIT_BRANCH="v${_CFG__DEPLOYABLE_VERSION}"
 export _CFG__CONDA_RECIPE="apodeixi_${_CFG__DEPLOYABLE_VERSION}_recipe"

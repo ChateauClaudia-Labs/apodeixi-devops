@@ -9,7 +9,7 @@ _CFG__pipeline_description() {
     echo "
     Flow type:                          Docker flow
     Apodexi version built:              v${_CFG__DEPLOYABLE_VERSION}
-    Packaged as:                        Docker container for image 'apodeixi:latest'
+    Packaged as:                        Docker container for image ${_CFG__DEPLOYABLE_IMAGE}
     Deployed to:                        UAT environment in local Linux host (same host in which pipeline is run)
     Secrets:                            ${SECRETS_FOLDER}
     Collaboration area:                 ${COLLABORATION_AREA}
@@ -30,7 +30,7 @@ export _CFG__DEPLOYABLE_GIT_BRANCH="v${_CFG__DEPLOYABLE_VERSION}"
 # Defines the name (& tag) for the Apodeixi image to be created by the pipeline. If there is no tag, Docker will
 # by default put a tag of ":latest"
 #
-export _CFG__DEPLOYABLE_IMAGE="apodeixi"
+export _CFG__DEPLOYABLE_IMAGE="${_CFG__DEPLOYABLE}:latest"
 
 # These are inputs to the setting of _CFG__DEPLOYMENT_DOCKER_OPTIONS
 #

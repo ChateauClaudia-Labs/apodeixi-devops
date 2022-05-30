@@ -9,7 +9,7 @@ _CFG__pipeline_description() {
     echo "
     Flow type:                          Docker flow
     Apodexi version built:              Alex's 'dev' branch in host CC-Labs-2
-    Packaged as:                        Docker container for image 'apodeixi:dev'
+    Packaged as:                        Docker container for image '${_CFG__DEPLOYABLE_IMAGE}'
     Deployed to:                        Local Linux host (same host in which pipeline is run)
     Secrets:                            ${SECRETS_FOLDER}
     Collaboration area:                 ${COLLABORATION_AREA}
@@ -33,13 +33,13 @@ export _CFG__DEPLOYABLE_VERSION="dev"
 # Purpose: function is called by CCL-DevOps to set _CFG__BUILD_DOCKER_OPTIONS
 #
 export MOUNT_APODEIXI_GIT_PROJECT=1
-export _CFG__DEPLOYABLE_GIT_URL="/mnt/c/Users/aleja/Documents/Code/chateauclaudia-labs/a6i_repos/apodeixi"
-export _CFG__TESTDB_GIT_URL="/mnt/c/Users/aleja/Documents/Code/chateauclaudia-labs/a6i_repos/apodeixi-testdb"
+export _CFG__DEPLOYABLE_GIT_URL="/mnt/c/Users/aleja/Documents/Code/chateauclaudia-labs/a6i_repos/${_CFG__DEPLOYABLE}"
+export _CFG__TESTDB_GIT_URL="/mnt/c/Users/aleja/Documents/Code/chateauclaudia-labs/a6i_repos/${_CFG__DEPLOYABLE}-testdb"
 
 # Defines the name (& tag) for the Apodeixi image to be created by the pipeline. If there is no tag, Docker will
 # by default put a tag of ":latest"
 #
-_CFG__DEPLOYABLE_IMAGE="apodeixi:dev"
+_CFG__DEPLOYABLE_IMAGE="${_CFG__DEPLOYABLE}:dev"
 
 # Inputs for function: epoch_commons.sh::_CFG__set_deployment_docker_options
 #

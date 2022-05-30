@@ -29,23 +29,23 @@ export _CFG__WIN_BASH_EXE="/mnt/c/Users/aleja/Documents/CodeImages/Technos/Git/b
 
 export _CFG__DEPLOYABLE="apodeixi"
 
-export _CFG__DEPLOYABLE_GIT_URL="https://github.com/ChateauClaudia-Labs/apodeixi.git"
+export _CFG__DEPLOYABLE_GIT_URL="https://github.com/ChateauClaudia-Labs/${_CFG__DEPLOYABLE}.git"
 
-export _CFG__TESTDB_GIT_URL="https://github.com/ChateauClaudia-Labs/apodeixi-testdb.git"
+export _CFG__TESTDB_GIT_URL="https://github.com/ChateauClaudia-Labs/${_CFG__DEPLOYABLE}-testdb.git"
 
-export _CFG__TESTDB_REPO_NAME="apodeixi-testdb"
+export _CFG__TESTDB_REPO_NAME="${_CFG__DEPLOYABLE}-testdb"
 
 # If we call <A6I_ROOT> the folder where Apodeixi repos exist, then we know that:
 #
 #   * The environment is usually <A6I_ROOT>/${ENVIRONMENT}. Example: <A6I_ROOT>/UAT_ENV
-#   * ${_CFG__PIPELINE_ALBUM} points to <A6I_ROOT>/apodeixi-devops/pipeline_album
+#   * ${_CFG__PIPELINE_ALBUM} points to <A6I_ROOT>/${_CFG__DEPLOYABLE}-devops/pipeline_album
 #   
 # This motivates how the following is set up
 A6I_ROOT=${_CFG__PIPELINE_ALBUM}/../../
 
 export APODEIXI_CONFIG_DIRECTORY=${_CFG__PIPELINE_ALBUM}/${PIPELINE_NAME}
 
-export TEST_APODEIXI_CONFIG_DIRECTORY=${_CFG__PIPELINE_ALBUM}/${PIPELINE_NAME}/apodeixi_testdb_config
+export TEST_APODEIXI_CONFIG_DIRECTORY=${_CFG__PIPELINE_ALBUM}/${PIPELINE_NAME}/${_CFG__DEPLOYABLE}_testdb_config
 
 _CFG__set_build_docker_options() {
 
@@ -80,21 +80,21 @@ _CFG__set_build_docker_options() {
 #   * _CFG__set_testrun_docker_options
 #   * _CFG__set_linux_test_conda_options
 #
-# We expect the test database to already have an `apodeixi_config.toml` file geared to development-time testing.
-# That means that the paths referenced in that `apodeixi_config.toml` file are expected to include hard-coded
+# We expect the test database to already have an `${_CFG__DEPLOYABLE}_config.toml` file geared to development-time testing.
+# That means that the paths referenced in that `${_CFG__DEPLOYABLE}_config.toml` file are expected to include hard-coded
 # directories for the developer's machine.
 #
 # These hard-coded directories in the host won't work when the tests are run inside the Apodeixi container, so we 
 # will have to replace them by paths in the container file system. However, we don't want to modify the
-# test database's `apodeixi_config.toml` file since its host hard-coded paths are needed at development time.
+# test database's `${_CFG__DEPLOYABLE}_config.toml` file since its host hard-coded paths are needed at development time.
 # Therefore, the logic of CCL-DevOps if for container to apply this logic when running CCL_Devops' testrun.sh:
 #
-#   1. Clone the GIT repo that contains the test database into /home/work, creating /home/work/apodeixi-testdb inside
+#   1. Clone the GIT repo that contains the test database into /home/work, creating /home/work/${_CFG__DEPLOYABLE}-testdb inside
 #      the container
 #   2. Rely on the environment variable $INJECTED_CONFIG_DIRECTORY to locate the folder where the Apodeixi configuration
 #      file resides. 
 #      This environment variable is needed to address the following problem with Apodeixi's test harness, and specifcially by
-#      apodeixi.testing_framework.a6i_skeleton_test.py:
+#      ${_CFG__DEPLOYABLE}.testing_framework.a6i_skeleton_test.py:
 #
 #           The test harness by default assumes that the Apodeixi configuration is found in 
 #
@@ -102,18 +102,18 @@ _CFG__set_build_docker_options() {
 #
 #           with the path relative to that of `a6i_skeleton_test.py` in the container, which is 
 #
-#                   /usr/local/lib/python3.9/dist-packages/apodeixi/testing_framework/a6i_skeleton_test.py
+#                   /usr/local/lib/python3.9/dist-packages/${_CFG__DEPLOYABLE}/testing_framework/a6i_skeleton_test.py
 #
 #      because of the way how pip installed Apodeixi inside the container. 
 #
 #      This is addresed by:
-#           - setting the environment variable $INJECTED_CONFIG_DIRECTORY to /home/apodeixi_testdb_config
+#           - setting the environment variable $INJECTED_CONFIG_DIRECTORY to /home/${_CFG__DEPLOYABLE}_testdb_config
 #           - this will cause the test harness to look for Apodeixi's configuration in the folder $INJECTED_CONFIG_DIRECTORY
 #           - additionally, read the value of another environment variable, $TEST_APODEIXI_CONFIG_DIRECTORY, from the
 #             pipeline definition (in pipeline_album/<pipeline_id>/pipeline_definition.sh)
-#           - this way the pipeline's choice for what apodeixi_config.toml to use for testing will come from looking
+#           - this way the pipeline's choice for what ${_CFG__DEPLOYABLE}_config.toml to use for testing will come from looking
 #             in $TEST_APODEIXI_CONFIG_DIRECTORY in the host
-#           - lastly, we mount $TEST_APODEIXI_CONFIG_DIRECTORY as /home/apodeixi_testdb_config in the container, which is
+#           - lastly, we mount $TEST_APODEIXI_CONFIG_DIRECTORY as /home/${_CFG__DEPLOYABLE}_testdb_config in the container, which is
 #             where the container-run test harness will expect it (since that's the value of $INJECTED_CONFIG_DIRECTORY)
 #
 _CFG__set_testrun_docker_options() {
@@ -131,7 +131,7 @@ _CFG__set_testrun_docker_options() {
                     echo echo "${_SVC__ERR_PROMPT} Aborting testrun..."
                     exit 1
             fi
-            export APODEIXI_TESTDB_URL_CLONED_BY_CONTAINER="/home/apodeixi-testdb"
+            export APODEIXI_TESTDB_URL_CLONED_BY_CONTAINER="/home/${_CFG__DEPLOYABLE}-testdb"
             export GIT_REPO_MOUNT_DOCKER_OPTION=" -v ${_CFG__TESTDB_GIT_URL}:${APODEIXI_TESTDB_URL_CLONED_BY_CONTAINER}"
         else
             echo "${_SVC__INFO_PROMPT}        => from this URL:"
@@ -140,9 +140,9 @@ _CFG__set_testrun_docker_options() {
     fi    
 
     echo    " -e _CFG__TESTDB_GIT_URL=${APODEIXI_TESTDB_URL_CLONED_BY_CONTAINER} " \
-            " -e INJECTED_CONFIG_DIRECTORY=/home/apodeixi_testdb_config" \
-            " -e APODEIXI_CONFIG_DIRECTORY=/home/apodeixi_testdb_config" \
-            " -v $TEST_APODEIXI_CONFIG_DIRECTORY:/home/apodeixi_testdb_config" \
+            " -e INJECTED_CONFIG_DIRECTORY=/home/${_CFG__DEPLOYABLE}_testdb_config" \
+            " -e APODEIXI_CONFIG_DIRECTORY=/home/${_CFG__DEPLOYABLE}_testdb_config" \
+            " -v $TEST_APODEIXI_CONFIG_DIRECTORY:/home/${_CFG__DEPLOYABLE}_testdb_config" \
             "${GIT_REPO_MOUNT_DOCKER_OPTION} "> /tmp/_CFG__TESTRUN_DOCKER_OPTIONS.txt
     export _CFG__TESTRUN_DOCKER_OPTIONS=`cat /tmp/_CFG__TESTRUN_DOCKER_OPTIONS.txt`
 }
@@ -162,10 +162,10 @@ _CFG__set_testrun_docker_options() {
 _CFG__set_deployment_docker_options() {
 
     # Check that Apodeixi config file exists
-    [ ! -f ${APODEIXI_CONFIG_DIRECTORY}/apodeixi_config.toml ] && echo \
+    [ ! -f ${APODEIXI_CONFIG_DIRECTORY}/${_CFG__DEPLOYABLE}_config.toml ] && echo \
         && echo "${_SVC__ERR_PROMPT} '${_CFG__PIPELINE_ALBUM}/${PIPELINE_NAME}' is improperly configured:" \
         && echo "${_SVC__ERR_PROMPT} It expects Apodeixi config file, which doesn't exist:" \
-        && echo "${_SVC__ERR_PROMPT}     ${APODEIXI_CONFIG_DIRECTORY}/apodeixi_config.toml" \
+        && echo "${_SVC__ERR_PROMPT}     ${APODEIXI_CONFIG_DIRECTORY}/${_CFG__DEPLOYABLE}_config.toml" \
         && echo \
         && exit 1
 
@@ -189,11 +189,11 @@ _CFG__set_deployment_docker_options() {
             && echo \
     && exit 1
 
-    echo    " -e APODEIXI_CONFIG_DIRECTORY=/home/apodeixi/config" \
-            " -v ${SECRETS_FOLDER}:/home/apodeixi/secrets " \
-            " -v ${COLLABORATION_AREA}:/home/apodeixi/collaboration_area "\
-            " -v ${KNOWLEDGE_BASE_FOLDER}:/home/apodeixi/kb " \
-            " -v ${APODEIXI_CONFIG_DIRECTORY}:/home/apodeixi/config" > /tmp/_CFG__DEPLOYMENT_DOCKER_OPTIONS.txt
+    echo    " -e APODEIXI_CONFIG_DIRECTORY=/home/${_CFG__DEPLOYABLE}/config" \
+            " -v ${SECRETS_FOLDER}:/home/${_CFG__DEPLOYABLE}/secrets " \
+            " -v ${COLLABORATION_AREA}:/home/${_CFG__DEPLOYABLE}/collaboration_area "\
+            " -v ${KNOWLEDGE_BASE_FOLDER}:/home/${_CFG__DEPLOYABLE}/kb " \
+            " -v ${APODEIXI_CONFIG_DIRECTORY}:/home/${_CFG__DEPLOYABLE}/config" > /tmp/_CFG__DEPLOYMENT_DOCKER_OPTIONS.txt
 
     export _CFG__DEPLOYMENT_DOCKER_OPTIONS=`cat /tmp/_CFG__DEPLOYMENT_DOCKER_OPTIONS.txt`
 
@@ -223,9 +223,9 @@ _CFG__apply_windows_test_conda_options() {
     # later runs in Windows and runs Apodeixi tests. This is what we must ensure:
     #   1. the variable $INJECTED_CONFIG_DIRECTORY is set in the script $1
     #   2. Ensure $INJECTED_CONFIG_DIRECTORY points to a valid directory
-    #   3. that directory contains a file called apodeixi_config.toml which is "based" on the file
-    #      $TEST_APODEIXI_CONFIG_DIRECTORY/apodeixi_config.toml but differs from it a per the next point
-    #   4. Paths like "home/work" in $TEST_APODEIXI_CONFIG_DIRECTORY/apodeixi_config.toml are replaced by
+    #   3. that directory contains a file called ${_CFG__DEPLOYABLE}_config.toml which is "based" on the file
+    #      $TEST_APODEIXI_CONFIG_DIRECTORY/${_CFG__DEPLOYABLE}_config.toml but differs from it a per the next point
+    #   4. Paths like "home/work" in $TEST_APODEIXI_CONFIG_DIRECTORY/${_CFG__DEPLOYABLE}_config.toml are replaced by
     #      paths like "$WIN_TESTDB_REPO_DIR/${WIN_TESTDB_REPO_NAME".
     #
     # APPROACH: we create a temporary file in WSL,
@@ -238,7 +238,7 @@ _CFG__apply_windows_test_conda_options() {
 
     # Step 1: Ensure $INJECTED_CONFIG_DIRECTORY is set and points to a valid directory
     #
-    echo "export INJECTED_CONFIG_DIRECTORY=$(echo ${WIN_WORKING_DIR}/apodeixi_testdb_config)" \
+    echo "export INJECTED_CONFIG_DIRECTORY=$(echo ${WIN_WORKING_DIR}/${_CFG__DEPLOYABLE}_testdb_config)" \
             > /tmp/_CFG__apply_windows_test_conda_options.txt
 
     # Step 2: Ensure $INJECTED_CONFIG_DIRECTORY points to a valid directory
@@ -251,17 +251,17 @@ _CFG__apply_windows_test_conda_options() {
     #           
     #                   IN_WORKING_DIR=$(to_windows_path ${WORKING_DIR})
     #
-    export WSL_INJECTED_CONFIG_DIRECTORY="${WORKING_DIR}/apodeixi_testdb_config"
+    export WSL_INJECTED_CONFIG_DIRECTORY="${WORKING_DIR}/${_CFG__DEPLOYABLE}_testdb_config"
     if [ ! -d $WSL_INJECTED_CONFIG_DIRECTORY ]
         then
             mkdir $WSL_INJECTED_CONFIG_DIRECTORY
     fi
 
-    # Step 3: put instructions in script $1 to copy the file $TEST_APODEIXI_CONFIG_DIRECTORY/apodeixi_config.toml 
+    # Step 3: put instructions in script $1 to copy the file $TEST_APODEIXI_CONFIG_DIRECTORY/${_CFG__DEPLOYABLE}_config.toml 
     #       to "$WIN_TESTDB_REPO_DIR/${WIN_TESTDB_REPO_NAME"
     #
     #       GOTCHA: 
-    #           $TEST_APODEIXI_CONFIG_DIRECTORY/apodeixi_config.toml is a WSL path, so we have to:
+    #           $TEST_APODEIXI_CONFIG_DIRECTORY/${_CFG__DEPLOYABLE}_config.toml is a WSL path, so we have to:
     #           a. Put an instruction to set Windows environment variable  $WIN_INJECTED_CONFIG_DIRECTORY in
     #               script $1 for the equivalent Windows path
     #           b. Use single quotes in the copy instruction so that the variable $WIN_INJECTED_CONFIG_DIRECTORY is not
@@ -272,7 +272,7 @@ _CFG__apply_windows_test_conda_options() {
     echo "export WIN_INJECTED_CONFIG_DIRECTORY=$(to_windows_path ${TEST_APODEIXI_CONFIG_DIRECTORY})" \
             >> /tmp/_CFG__apply_windows_test_conda_options.txt
 
-    echo 'cp ${WIN_INJECTED_CONFIG_DIRECTORY}/apodeixi_config.toml ${INJECTED_CONFIG_DIRECTORY}/' \
+    echo 'cp ${WIN_INJECTED_CONFIG_DIRECTORY}/${_CFG__DEPLOYABLE}_config.toml ${INJECTED_CONFIG_DIRECTORY}/' \
             >> /tmp/_CFG__apply_windows_test_conda_options.txt
 
     echo 'abort_testrun_on_error' \
@@ -284,7 +284,7 @@ _CFG__apply_windows_test_conda_options() {
     #
     #           TESTDB_REPO_PARENT_DIR="$(cd ~/tmp && pwd)/test_${WIN_TIMESTAMP}"
     #   
-    #   Thus, we need apodeixi_config.toml to reference paths which in Windows are equal to $TESTDB_REPO_PARENT_DIR
+    #   Thus, we need ${_CFG__DEPLOYABLE}_config.toml to reference paths which in Windows are equal to $TESTDB_REPO_PARENT_DIR
     #   Since the file we copied references path in '/home/work', we need to:
     #
     #   a. Put an instruction in script $1 to set the value of variable TESTDB_REPO_PARENT_DIR
@@ -298,26 +298,26 @@ _CFG__apply_windows_test_conda_options() {
     #
     #               /c/Users/aleja/tmp/test_220501.144650
     #
-    #       but we need ${INJECTED_CONFIG_DIRECTORY}/apodeixi_config.toml to have paths like 
+    #       but we need ${INJECTED_CONFIG_DIRECTORY}/${_CFG__DEPLOYABLE}_config.toml to have paths like 
     #
     #               C:/Users/aleja/tmp/test_220501.144650
     #
-    #       to prevent problems when loading the yaml file "/c/Users/aleja/tmp/test_220501.144650/apodeixi-testdb/test_config.yaml"
+    #       to prevent problems when loading the yaml file "/c/Users/aleja/tmp/test_220501.144650/${_CFG__DEPLOYABLE}-testdb/test_config.yaml"
     #       
     #       So put an instruction for another we do another sed call, replacing "/c/" by "C:/"
     #
     echo 'export TESTDB_REPO_PARENT_DIR=$(cd ~/tmp && pwd)/test_${WIN_TIMESTAMP}' \
              >> /tmp/_CFG__apply_windows_test_conda_options.txt   
-    echo 'sed -i "s#/home/work/#${TESTDB_REPO_PARENT_DIR}/#g" ${INJECTED_CONFIG_DIRECTORY}/apodeixi_config.toml' \
+    echo 'sed -i "s#/home/work/#${TESTDB_REPO_PARENT_DIR}/#g" ${INJECTED_CONFIG_DIRECTORY}/${_CFG__DEPLOYABLE}_config.toml' \
              >> /tmp/_CFG__apply_windows_test_conda_options.txt   
     echo 'abort_testrun_on_error' \
              >> /tmp/_CFG__apply_windows_test_conda_options.txt   
-    echo 'sed -i "s#/c/#C:/#g" ${INJECTED_CONFIG_DIRECTORY}/apodeixi_config.toml' \
+    echo 'sed -i "s#/c/#C:/#g" ${INJECTED_CONFIG_DIRECTORY}/${_CFG__DEPLOYABLE}_config.toml' \
              >> /tmp/_CFG__apply_windows_test_conda_options.txt   
     echo 'abort_testrun_on_error' \
              >> /tmp/_CFG__apply_windows_test_conda_options.txt
 
-    echo 'echo "[A6I_WIN_TEST_VIRTUAL_ENV] =========== Additional logic from Apodeixi: set up apodeixi config"   &>> ${TEST_LOG}' \
+    echo 'echo "[A6I_WIN_TEST_VIRTUAL_ENV] =========== Additional logic from Apodeixi: set up ${_CFG__DEPLOYABLE} config"   &>> ${TEST_LOG}' \
             >> /tmp/_CFG__apply_windows_test_conda_options.txt
     echo 'echo &>> ${TEST_LOG}' \
             >> /tmp/_CFG__apply_windows_test_conda_options.txt
