@@ -9,6 +9,7 @@
 export _CFG__UBUNTU_IMAGE="ubuntu:20.04"
 export _CFG__UBUNTU_PYTHON_PACKAGE="python3.9"
 export _CFG__BUILD_SERVER="a6i-build-server"
+export _CFG__CONDA_VERSION="4.12" # NB: On May 29 2022 the Conda build failed and seems related to Conda version moving from 4.12 to 4.13
 
 # Define which server image to use for the build. Determines version of Ubuntu and Python for the container where the build runs
 export _CFG__CONDABUILD_SERVER="a6i-condabuild-server"
