@@ -47,7 +47,12 @@ export _CFG__WIN_BASH_EXE="/mnt/c/Users/aleja/Documents/CodeImages/Technos/Git/b
 #
 export _CFG__DEPLOYABLE="apodeixi"
 
-export _CFG__APPLICATION="apodeixi" # Apodeixi is monolithic, so the application and deployable coincide in this case
+# Apodeixi is monolithic, so the application and deployable coincide in this case
+export _CFG__APPLICATION="${_CFG__DEPLOYABLE}" 
+
+# This is the path from (and including) the root folder for the repo all to way to the deployable. In the case
+# of Apodeixi it is "trivial" since there is only 1 deployable in the repo
+export _CFG__DEPLOYABLE_RELATIVE_PATH="${_CFG__DEPLOYABLE}"
 
 export _CFG__DEPLOYABLE_GIT_URL="https://github.com/ChateauClaudia-Labs/${_CFG__APPLICATION}.git"
 
