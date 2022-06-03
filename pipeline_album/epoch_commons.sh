@@ -7,7 +7,8 @@
 # is to "source" this file as the first thing that is done in a pipeline definition script.
 #
 export _CFG__UBUNTU_IMAGE="ubuntu:20.04"
-export _CFG__UBUNTU_PYTHON_PACKAGE="python3.9"
+export _CFG__PYTHON_VERSION="3.9"
+export _CFG__UBUNTU_PYTHON_PACKAGE="python${_CFG__PYTHON_VERSION}"
 export _CFG__BUILD_SERVER="a6i-build-server"
 export _CFG__CONDA_VERSION="4.12" # NB: On May 29 2022 the Conda build failed and seems related to Conda version moving from 4.12 to 4.13
 
@@ -59,6 +60,11 @@ export _CFG__DEPLOYABLE_GIT_URL="https://github.com/ChateauClaudia-Labs/${_CFG__
 export _CFG__TESTDB_GIT_URL="https://github.com/ChateauClaudia-Labs/${_CFG__APPLICATION}-testdb.git"
 
 export _CFG__TESTDB_REPO_NAME="${_CFG__APPLICATION}-testdb"
+
+# This is a Linux command that will be executed inside the deployable's container when that container is deployed,
+# to validate that the deployment is correct. The deployment will be aborted by CCL Chassis if this command fails.
+#
+export _CFG__DEPLOYMENT_VALIDATION_COMMAND="apo --version && apo get assertions"
 
 # We need to set the variable $A6I_ROOT which is used by the Apodeixi pipeline definitions as the root folder
 # above test environments like UAT.
