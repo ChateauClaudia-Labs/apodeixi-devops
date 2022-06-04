@@ -50,6 +50,7 @@ export _CFG__DEPLOYABLE="apodeixi"
 
 # Apodeixi is monolithic, so the application and deployable coincide in this case
 export _CFG__APPLICATION="${_CFG__DEPLOYABLE}" 
+export _CFG__APPLICATION_BASE_IMAGE="${_CFG__APPLICATION}-base"
 
 # This is the path from (and including) the root folder for the repo all to way to the deployable. In the case
 # of Apodeixi it is "trivial" since there is only 1 deployable in the repo
