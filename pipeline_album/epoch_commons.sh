@@ -292,31 +292,6 @@ _CFG__apply_windows_test_conda_options() {
             mkdir $WSL_INJECTED_CONFIG_DIRECTORY
     fi
 
-    # DEPRECATEDStep 3: put instructions in script $1 to copy the file $TEST_DEPLOYABLE_CONFIG_DIRECTORY/${_CFG__DEPLOYABLE}_config.toml 
-    #       to "$WIN_TESTDB_REPO_DIR/${WIN_TESTDB_REPO_NAME"
-    #
-    #       GOTCHA: 
-    #           $TEST_DEPLOYABLE_CONFIG_DIRECTORY/${_CFG__DEPLOYABLE}_config.toml is a WSL path, which might not
-    #           even exist in windows (i.e., might not start with "/mnt/c/..." but with "/home/..." so we have to:
-    #           a. Copy its contents to file that, while still WSL, is at least a windows directory (i.e., starts
-    #               with "/mnt/c/..."). For this we use the 
-    #           b. Put an instruction to set Windows environment variable  $WIN_INJECTED_CONFIG_DIRECTORY in
-    #               script $1 for the equivalent Windows path
-    #           c. Use single quotes in the copy instruction so that the variable $WIN_INJECTED_CONFIG_DIRECTORY is not
-    #               interpolated in WSL
-    #           d. Should the copy instruction fail when it is executed later on in Windows, inject into script $1
-    #               a call to the Windows script's function `abort_testrun_on_error`
-    #
-    
-    ##echo "export WIN_INJECTED_CONFIG_DIRECTORY=$(to_windows_path ${TEST_DEPLOYABLE_CONFIG_DIRECTORY})" \
-    ##       >> /tmp/_CFG__apply_windows_test_conda_options.txt
-
-    ##echo 'cp ${WIN_INJECTED_CONFIG_DIRECTORY}/${_CFG__DEPLOYABLE}_config.toml ${INJECTED_CONFIG_DIRECTORY}/' \
-    ##        >> /tmp/_CFG__apply_windows_test_conda_options.txt
-
-    ##echo 'abort_testrun_on_error' \
-    ##        >> /tmp/_CFG__apply_windows_test_conda_options.txt
- 
     # Step 3
     #
     #  Now we know that $WSL_INJECTED_CONFIG_DIRECTORY is a WSL path to a valid Windows folder.

@@ -1,11 +1,11 @@
 # This will define the execute_conda_flow_step function
 source ${_CFG__PIPELINE_ALBUM}/execution_commons.sh
 
-#execute_conda_flow_step request_linux_condabuild.sh "Linux conda build step"
+execute_conda_flow_step request_linux_condabuild.sh "Linux conda build step"
 
-#execute_conda_flow_step request_linux_test.sh "Linux test step"
+execute_conda_flow_step request_linux_test.sh "Linux test step"
 
-#execute_conda_flow_step request_windows_condabuild.sh "Windows conda build step"
+execute_conda_flow_step request_windows_condabuild.sh "Windows conda build step"
 
 execute_conda_flow_step request_windows_test.sh "Windows test step"
 
